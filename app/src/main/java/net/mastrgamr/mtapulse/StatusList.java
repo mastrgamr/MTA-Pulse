@@ -1,6 +1,7 @@
 package net.mastrgamr.mtapulse;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,12 +22,14 @@ import java.util.List;
  */
 public class StatusList extends BaseAdapter
 {
+    private final String LOG_TAG = "STATUSLIST";
+
     private Context c;
     private XMLParser xmlParser;
 
-    private TextView lineText;
-    private TextView statusText;
-    private TextView dateTimeText;
+    //private TextView lineText;
+    //private TextView statusText;
+    //private TextView dateTimeText;
 
     public StatusList(Context c, XMLParser xmlParser){
         this.c = c;
@@ -53,40 +56,58 @@ public class StatusList extends BaseAdapter
         return 0;
     }
 
-    //TODO: Obviously optimize later. RecyclerView/ViewHolder yada yada.
+    static class StatusRowItemHolder {
+        TextView lineText;
+        TextView statusText;
+        TextView dateTimeText;
+    }
+
+    //TODO: Check efficiency, doesn't seem right in teh logcatz. Getting Tags, then inflating views?
     @Override
     public View getView(int position, View convertView, ViewGroup parent)
     {
-        LayoutInflater inflater = (LayoutInflater)c.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View row = inflater.inflate(R.layout.status_list_item, parent, false);
+        StatusRowItemHolder srih;
 
-        lineText = (TextView)row.findViewById(R.id.lineText);
-        statusText = (TextView)row.findViewById(R.id.statusText);
-        dateTimeText = (TextView)row.findViewById(R.id.dateTimeText);
+        if(convertView == null)
+        {
+            LayoutInflater inflater = (LayoutInflater) c.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            convertView = inflater.inflate(R.layout.status_list_item, parent, false);
+
+            Log.d(LOG_TAG, "Inflating ViewHolder");
+            srih = new StatusRowItemHolder();
+            srih.lineText = (TextView) convertView.findViewById(R.id.lineText);
+            srih.statusText = (TextView) convertView.findViewById(R.id.statusText);
+            srih.dateTimeText = (TextView) convertView.findViewById(R.id.dateTimeText);
+
+            convertView.setTag(srih);
+        } else {
+            Log.d(LOG_TAG, "Getting Tag");
+            srih = (StatusRowItemHolder)convertView.getTag();
+        }
 
         TransportationType transitType = xmlParser.getTransportationTypes().get(position);
 
-        lineText.setText(transitType.getName());
-        dateTimeText.setText("Updated: " + transitType.getDate() + ", at " + transitType.getTime());
+        srih.lineText.setText(transitType.getName());
+        srih.dateTimeText.setText("Updated: " + transitType.getDate() + ", at " + transitType.getTime());
 
         if(transitType.getStatus().equalsIgnoreCase("Good Service")){
-            statusText.setText(transitType.getStatus());
-            statusText.setTextColor(c.getResources().getColor(R.color.green));
+            srih.statusText.setText(transitType.getStatus());
+            srih.statusText.setTextColor(c.getResources().getColor(R.color.green));
         } else if(transitType.getStatus().equalsIgnoreCase("Planned Work") ||
                 transitType.getStatus().equalsIgnoreCase("Service Change") ||
                 transitType.getStatus().equalsIgnoreCase("Planned Detour")){
-            statusText.setText(transitType.getStatus());
-            statusText.setTextColor(c.getResources().getColor(R.color.yellow));
+            srih.statusText.setText(transitType.getStatus());
+            srih.statusText.setTextColor(c.getResources().getColor(R.color.yellow));
         } else if(transitType.getStatus().equalsIgnoreCase("Delays"))
         {
-            statusText.setText(transitType.getStatus());
-            statusText.setTextColor(c.getResources().getColor(R.color.red));
+            srih.statusText.setText(transitType.getStatus());
+            srih.statusText.setTextColor(c.getResources().getColor(R.color.red));
         }else if(transitType.getStatus().equalsIgnoreCase("Suspended"))
         {
-            statusText.setText(transitType.getStatus());
-            statusText.setTextColor(c.getResources().getColor(R.color.red));
+            srih.statusText.setText(transitType.getStatus());
+            srih.statusText.setTextColor(c.getResources().getColor(R.color.red));
         }
 
-        return row;
+        return convertView;
     }
 }
