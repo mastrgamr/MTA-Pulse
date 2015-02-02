@@ -26,6 +26,7 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import net.mastrgamr.mtapulse.gtfs_static.Routes;
 
 import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 
 import java.io.BufferedReader;
@@ -38,6 +39,7 @@ import java.util.ArrayList;
 public class TripFragment extends Fragment implements OnMapReadyCallback
 {
     private final String LOG_TAG = getTag();
+    private final int CSV_HEADER = 1;
 
     private GoogleMap gMap;
     private MapView mapView;
@@ -45,6 +47,7 @@ public class TripFragment extends Fragment implements OnMapReadyCallback
 
     private Routes routes;
     private ArrayList<Routes> routesList;
+    private ArrayList<String> routeIds;
 
     public TripFragment() { }
 
@@ -54,12 +57,16 @@ public class TripFragment extends Fragment implements OnMapReadyCallback
         MapsInitializer.initialize(getActivity());
 
         routesList = new ArrayList<>();
+        routeIds = new ArrayList<>();
 
         InputStream input = getActivity().getResources().openRawResource(R.raw.routes);
         BufferedReader rbr = new BufferedReader(new InputStreamReader(input));
 
         try {
-            for(CSVRecord record : CSVFormat.DEFAULT.parse(rbr)){
+            CSVParser csvParser = CSVFormat.DEFAULT.parse(rbr);
+            for(CSVRecord record : csvParser){
+                if(csvParser.getCurrentLineNumber() == CSV_HEADER)
+                    continue; //Skip header in gtfs csv files
                 if(record.size() < 9) {
                     routes = new Routes(record.get(0), record.get(3), record.get(4), record.get(6), record.get(7));
                 } else {
@@ -67,6 +74,7 @@ public class TripFragment extends Fragment implements OnMapReadyCallback
                 }
 
                 routesList.add(routes);
+                routeIds.add(routes.getRouteId());
             }
         } catch (IOException e) {
             Log.e(LOG_TAG, e.getMessage());
@@ -84,10 +92,10 @@ public class TripFragment extends Fragment implements OnMapReadyCallback
         mapView.getMapAsync(this);
 
         subwayList = (GridView)rootView.findViewById(R.id.subwayList);
-        ArrayAdapter<Routes> routesAdapter =
-                new ArrayAdapter<Routes>(rootView.getContext(),
+        ArrayAdapter routesAdapter =
+                new ArrayAdapter<>(rootView.getContext(),
                         android.R.layout.simple_list_item_1,
-                        routesList);
+                        routeIds);
         subwayList.setAdapter(routesAdapter);
 
         return rootView;
