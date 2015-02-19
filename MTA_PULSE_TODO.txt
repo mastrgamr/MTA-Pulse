@@ -1,0 +1,8 @@
+implement StikkyHeaders
+When TripFragment is open, search nearby stations; populate list below with those stops (as routes)
+-if stop is within radius lookup stopId
+-list item layout contain [route][nearby stop name]
+--background is determined by route background Color
+--Arrival time located on bottom edge of item layout (centered); static followed by live
+
+Implement Realtime feed data
