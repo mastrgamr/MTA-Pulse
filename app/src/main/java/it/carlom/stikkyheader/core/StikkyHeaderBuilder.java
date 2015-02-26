@@ -10,8 +10,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.ScrollView;
+
+import net.mastrgamr.mtapulse.tools.HeaderGridView;
+import net.mastrgamr.mtapulse.tools.StikkyHeaderGridView;
 
 import it.carlom.stikkyheader.core.animator.HeaderStikkyAnimator;
 
@@ -30,6 +34,10 @@ public abstract class StikkyHeaderBuilder {
 
     public static ListViewBuilder stickTo(final ListView listView) {
         return new ListViewBuilder(listView);
+    }
+
+    public static HeaderGridViewBuilder stickTo(final HeaderGridView gridView) {
+        return new HeaderGridViewBuilder(gridView);
     }
 
     public static RecyclerViewBuilder stickTo(final RecyclerView recyclerView) {
@@ -85,6 +93,27 @@ public abstract class StikkyHeaderBuilder {
             }
 
             return new StikkyHeaderListView(mContext, mListView, mHeader, mMinHeight, mAnimator);
+        }
+    }
+
+    public static class HeaderGridViewBuilder extends StikkyHeaderBuilder {
+
+        private final HeaderGridView mGridView;
+
+        protected HeaderGridViewBuilder(final HeaderGridView gridView) {
+            super(gridView.getContext());
+            mGridView = gridView;
+        }
+
+        @Override
+        public StikkyHeaderGridView build() {
+
+            //if the animator has not been set, the default one is used
+            if (mAnimator == null) {
+                mAnimator = new HeaderStikkyAnimator();
+            }
+
+            return new StikkyHeaderGridView(mContext, mGridView, mHeader, mMinHeight, mAnimator);
         }
     }
 

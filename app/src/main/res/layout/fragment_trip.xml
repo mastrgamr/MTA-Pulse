@@ -3,18 +3,12 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
 
-    <com.google.android.gms.maps.MapView
-        android:id="@+id/map"
-        android:layout_width="match_parent"
-        android:layout_height="350dp" />
-
-    <GridView
+    <net.mastrgamr.mtapulse.tools.HeaderGridView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/subwayList"
-        android:layout_below="@+id/map"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:numColumns="3" />
+        android:numColumns="3"
+        android:id="@+id/subwayList" />
+
+    <include layout="@layout/map_header"/>
 
 </RelativeLayout>
