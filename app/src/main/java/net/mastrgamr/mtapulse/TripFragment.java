@@ -26,6 +26,7 @@ import com.google.android.gms.maps.model.PolylineOptions;
 
 import net.mastrgamr.mtapulse.gtfs_static.Routes;
 import net.mastrgamr.mtapulse.gtfs_static.Shapes;
+import net.mastrgamr.mtapulse.gtfs_static.Stops;
 import net.mastrgamr.mtapulse.tools.HeaderGridView;
 
 import org.apache.commons.csv.CSVFormat;
@@ -53,9 +54,12 @@ public class TripFragment extends Fragment implements OnMapReadyCallback
 
     private Routes routes;
     private Shapes shapes;
+    private Stops stops;
+
     private ArrayList<Routes> routesList;
     private ArrayList<String> routeIds;
     private ArrayList<Shapes> shapesList;
+    private ArrayList<Stops> stopsList;
 
     PolylineOptions shapesOptions = new PolylineOptions();
 
@@ -97,7 +101,8 @@ public class TripFragment extends Fragment implements OnMapReadyCallback
                 routeIds.add(routes.getRouteId());
             }
 
-            csvParser = CSVFormat.DEFAULT.parse(sbr);
+            csvParser = new CSVParser(sbr,
+                    CSVFormat.DEFAULT.withHeader("shape_id", "shape_pt_lat", "shape_pt_lon", "shape_pt_sequence", "shape_dist_traveled"));
             for(CSVRecord record : csvParser){
 //                if(csvParser.getCurrentLineNumber() == CSV_HEADER)
 //                    continue; //Skip header in gtfs csv files
@@ -107,9 +112,12 @@ public class TripFragment extends Fragment implements OnMapReadyCallback
                 shapesList.add(shapes);
             }
 
-            csvParser = CSVFormat.DEFAULT.parse(stbr);
+            csvParser = new CSVParser(stbr,
+                    CSVFormat.DEFAULT.withHeader("stop_id", "stop_code", "stop_name", "stop_desc", "stop_lat", "stop_lon", "zone_id", "stop_url", "location_type", "parent_station"));
             for(CSVRecord record : csvParser){
+                stops = new Stops(record.get("stop_id"), record.get("stop_name"), record.get("stop_lat"), record.get("stop_lon"));
 
+                stopsList.add(stops);
             }
         } catch (IOException e) {
             Log.e(LOG_TAG, e.getMessage());
