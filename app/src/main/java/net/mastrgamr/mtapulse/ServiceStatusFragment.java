@@ -7,6 +7,7 @@ package net.mastrgamr.mtapulse;
  */
 import android.app.Activity;
 import android.app.Fragment;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -22,16 +23,18 @@ import java.io.IOException;
 
 import javax.xml.parsers.ParserConfigurationException;
 
-public class ServiceStatusFragment extends Fragment implements Runnable{
+public class ServiceStatusFragment extends Fragment {
 
     private final String LOG_TAG = getTag();
     private static final String ARG_SECTION_NUMBER = "section_number";
 
+    private View rootView;
     private ListView listView;
 
     private XMLParser xmlParser;
 
     Thread thread;
+    private PopulateList populateList;
 
     /**
      * Returns a new instance of this fragment for the given section
@@ -52,22 +55,24 @@ public class ServiceStatusFragment extends Fragment implements Runnable{
         super.onCreate(savedInstanceState);
 
         //TODO: Use AsyncTask/Service instead.
-        thread = new Thread(this);
+        populateList = new PopulateList();
+        populateList.execute("http://web.mta.info/status/serviceStatus.txt");
+        /*thread = new Thread(this);
         thread.start();
         try {
             thread.join();
         } catch (InterruptedException e) {
             Log.d(LOG_TAG, e.getMessage());
-        }
+        }*/
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+        rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
         listView = (ListView)rootView.findViewById(R.id.status_list);
-        listView.setAdapter(new StatusList(rootView.getContext(), xmlParser));
+        //listView.setAdapter(new StatusList(rootView.getContext(), xmlParser));
 
         return rootView;
     }
@@ -79,13 +84,40 @@ public class ServiceStatusFragment extends Fragment implements Runnable{
                 getArguments().getInt(ARG_SECTION_NUMBER));
     }
 
-    @Override
+    /*@Override
     public void run() {
         try {
             xmlParser = new XMLParser("http://web.mta.info/status/serviceStatus.txt");
             xmlParser.parse();
         } catch (ParserConfigurationException | SAXException | IOException e) {
             Log.d(LOG_TAG, e.getMessage());
+        }
+    }*/
+
+    private class PopulateList extends AsyncTask<String, Void, Void> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected Void doInBackground(String... params) {
+            try {
+                xmlParser = new XMLParser(params[0]);
+                xmlParser.parse();
+            } catch (ParserConfigurationException | SAXException | IOException e) {
+                Log.d(LOG_TAG, e.getMessage());
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+
+            listView.setAdapter(new StatusList(rootView.getContext(), xmlParser));
         }
     }
 }

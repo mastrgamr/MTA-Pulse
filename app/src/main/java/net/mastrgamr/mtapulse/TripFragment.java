@@ -20,6 +20,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.PolylineOptions;
@@ -73,6 +74,7 @@ public class TripFragment extends Fragment implements OnMapReadyCallback
         routesList = new ArrayList<>();
         routeIds = new ArrayList<>();
         shapesList = new ArrayList<>();
+        stopsList = new ArrayList<>();
 
         InputStream input = getActivity().getResources().openRawResource(R.raw.routes);
         BufferedReader rbr = new BufferedReader(new InputStreamReader(input));
@@ -89,8 +91,8 @@ public class TripFragment extends Fragment implements OnMapReadyCallback
                             "route_desc", "route_type", "route_url", "route_color", "route_text_color"));
 
             for(CSVRecord record : csvParser){
-//                if(csvParser.getCurrentLineNumber() == CSV_HEADER)
-//                    continue; //Skip header in gtfs csv files
+                if(csvParser.getCurrentLineNumber() == CSV_HEADER)
+                    continue; //Skip header in gtfs csv files
                 if(record.size() < 9) {
                     routes = new Routes(record.get(0), record.get(3), record.get(4), record.get(6), record.get(7));
                 } else {
@@ -104,9 +106,9 @@ public class TripFragment extends Fragment implements OnMapReadyCallback
             csvParser = new CSVParser(sbr,
                     CSVFormat.DEFAULT.withHeader("shape_id", "shape_pt_lat", "shape_pt_lon", "shape_pt_sequence", "shape_dist_traveled"));
             for(CSVRecord record : csvParser){
-//                if(csvParser.getCurrentLineNumber() == CSV_HEADER)
-//                    continue; //Skip header in gtfs csv files
-                shapes = new Shapes(record.get(0), record.get(1), record.get(2), record.get(3));
+                if(csvParser.getCurrentLineNumber() == CSV_HEADER)
+                    continue; //Skip header in gtfs csv files
+                shapes = new Shapes(record.get("shape_id"), record.get("shape_pt_lat"), record.get("shape_pt_lon"), record.get("shape_pt_sequence"));
 
                 shapesOptions.add(new LatLng(Double.parseDouble(shapes.getShapePtLat()), Double.parseDouble(shapes.getShapePtLon())));
                 shapesList.add(shapes);
@@ -115,6 +117,8 @@ public class TripFragment extends Fragment implements OnMapReadyCallback
             csvParser = new CSVParser(stbr,
                     CSVFormat.DEFAULT.withHeader("stop_id", "stop_code", "stop_name", "stop_desc", "stop_lat", "stop_lon", "zone_id", "stop_url", "location_type", "parent_station"));
             for(CSVRecord record : csvParser){
+                if(csvParser.getCurrentLineNumber() == CSV_HEADER)
+                    continue; //Skip header in gtfs csv files
                 stops = new Stops(record.get("stop_id"), record.get("stop_name"), record.get("stop_lat"), record.get("stop_lon"));
 
                 stopsList.add(stops);
@@ -182,6 +186,7 @@ public class TripFragment extends Fragment implements OnMapReadyCallback
         LatLngBounds NYC = new LatLngBounds(new LatLng(40.50, -74.30), new LatLng(40.92, -73.57));
         gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(NYC.getCenter(), 10f));
 
+        Circle circle;
         gMap.addPolyline(shapesOptions);
     }
 }

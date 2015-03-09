@@ -22,7 +22,7 @@ import java.util.List;
  */
 public class StatusList extends BaseAdapter
 {
-    private final String LOG_TAG = "STATUSLIST";
+    private final String LOG_TAG = StatusList.class.getSimpleName();
 
     private Context c;
     private XMLParser xmlParser;
