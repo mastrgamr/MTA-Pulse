@@ -153,7 +153,8 @@ public class TripFragment extends Fragment implements OnMapReadyCallback
 
         ArrayAdapter routesAdapter =
                 new ArrayAdapter<>(getActivity(),
-                        android.R.layout.simple_list_item_1,
+                        R.layout.trip_grid_list_item,
+                        R.id.route_text,
                         routeIds);
         subwayList.setAdapter(routesAdapter);
     }
