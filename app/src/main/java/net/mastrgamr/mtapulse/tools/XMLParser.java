@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Project: GTFSParsing
+ * Project: MTA Pulse
  * Author: Stuart Smith
  * Date: 1/23/2015
  */

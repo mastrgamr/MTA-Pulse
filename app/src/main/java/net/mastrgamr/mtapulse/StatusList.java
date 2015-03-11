@@ -88,7 +88,11 @@ public class StatusList extends BaseAdapter
         TransportationType transitType = xmlParser.getTransportationTypes().get(position);
 
         srih.lineText.setText(transitType.getName());
-        srih.dateTimeText.setText("Updated: " + transitType.getDate() + ", at " + transitType.getTime());
+        if(transitType.getDate().equals("") || transitType.getTime().equals("")){
+            srih.dateTimeText.setText("");
+        } else {
+            srih.dateTimeText.setText("Updated: " + transitType.getDate() + ", at " + transitType.getTime());
+        }
 
         if(transitType.getStatus().equalsIgnoreCase("Good Service")){
             srih.statusText.setText(transitType.getStatus());
