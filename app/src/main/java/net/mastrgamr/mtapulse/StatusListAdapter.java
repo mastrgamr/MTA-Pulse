@@ -20,9 +20,9 @@ import java.util.List;
  * Author: Stuart Smith
  * Date: 1/25/15
  */
-public class StatusList extends BaseAdapter
+public class StatusListAdapter extends BaseAdapter
 {
-    private final String LOG_TAG = StatusList.class.getSimpleName();
+    private final String LOG_TAG = StatusListAdapter.class.getSimpleName();
 
     private Context c;
     private XMLParser xmlParser;
@@ -31,7 +31,7 @@ public class StatusList extends BaseAdapter
     //private TextView statusText;
     //private TextView dateTimeText;
 
-    public StatusList(Context c, XMLParser xmlParser){
+    public StatusListAdapter(Context c, XMLParser xmlParser){
         this.c = c;
         this.xmlParser = xmlParser;
     }
