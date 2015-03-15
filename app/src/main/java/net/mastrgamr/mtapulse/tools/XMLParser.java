@@ -24,7 +24,7 @@ import java.util.List;
 
 /**
  * Encapsulating class that takes a String URL argument and parses the XML class according to
- * "serviceStatus.txt" on the MTA datamine servers.
+ * "servicestatus.txt" on the MTA datamine servers.
  * TODO: Remove references to TransportationType (especially the List) to make this class self sustainable.
  */
 public class XMLParser {

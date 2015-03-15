@@ -10,6 +10,10 @@ import android.widget.BaseAdapter;
  * Author: Stuart Smith
  * Date: 3/11/2015
  */
+
+/**
+ * Used to populate the grid list of live trip times on TripFragemnt.
+ */
 public class TripListAdapter extends BaseAdapter {
 
     private Context context;

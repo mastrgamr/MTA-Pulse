@@ -12,19 +12,22 @@ import org.simpleframework.xml.Root;
 public class Line{
 
     @Element(name = "name")
-    public String name;
+    private String name;
 
     @Element(name = "status")
-    public String status;
+    private String status;
 
-    @Element(name = "text")
-    public String text;
+    @Element(name = "text", required = false)
+    private String text;
 
-    @Element(name = "Date")
-    public String date;
+    @Element(name = "Date", required = false)
+    private String date;
 
-    @Element(name = "Time")
-    public String time;
+    @Element(name = "Time", required = false)
+    private String time;
+
+    @Element(name = "url", required = false)
+    private String url;
 
     public Line(){ }
 

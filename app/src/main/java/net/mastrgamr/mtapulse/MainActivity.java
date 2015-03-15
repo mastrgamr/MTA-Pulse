@@ -11,7 +11,7 @@ import android.view.MenuItem;
 import android.support.v4.widget.DrawerLayout;
 
 public class MainActivity extends ActionBarActivity
-        implements NavigationDrawerFragment.NavigationDrawerCallbacks {
+        implements NavigationDrawerFragment.NavigationDrawerCallbacks, ServiceStatusInfoFragment.OnStatusClickedListener {
 
     private final String LOG_TAG = getClass().getSimpleName();
 
@@ -24,6 +24,8 @@ public class MainActivity extends ActionBarActivity
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
      */
     private CharSequence mTitle;
+
+    private FragmentManager fragmentManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +45,7 @@ public class MainActivity extends ActionBarActivity
     @Override
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
-        FragmentManager fragmentManager = getFragmentManager();
+        fragmentManager = getFragmentManager();
         switch (position)
         {
             case 0:
@@ -108,5 +110,19 @@ public class MainActivity extends ActionBarActivity
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        fragmentManager.popBackStack();
+    }
+
+    @Override
+    public void onStatusClicked() {
+        ServiceStatusInfoFragment fragment = ServiceStatusInfoFragment.newInstance("HERRO");
+        fragmentManager.beginTransaction()
+                .replace(R.id.container, fragment)
+                .addToBackStack(null)
+                .commit();
     }
 }

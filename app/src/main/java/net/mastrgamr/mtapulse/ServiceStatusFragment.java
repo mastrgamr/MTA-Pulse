@@ -1,31 +1,30 @@
 package net.mastrgamr.mtapulse;
 
-/**
- * Project: MTA Pulse
- * Created: Stuart Smith
- * Date: 1/23/2015.
- */
 import android.app.Activity;
 import android.app.Fragment;
+import android.app.FragmentManager;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
-import net.mastrgamr.mtapulse.tools.XMLParser;
+import net.mastrgamr.mtapulse.live_service.ServiceStatus;
 
-import org.xml.sax.SAXException;
+import org.simpleframework.xml.Serializer;
+import org.simpleframework.xml.core.Persister;
 
 import java.io.IOException;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
-import javax.xml.parsers.ParserConfigurationException;
-
+/**
+ * Project: MTA Pulse
+ * Created: Stuart Smith
+ * Date: 1/23/2015.
+ */
 public class ServiceStatusFragment extends Fragment {
 
     private final String LOG_TAG = getTag();
@@ -34,9 +33,8 @@ public class ServiceStatusFragment extends Fragment {
     private View rootView;
     private ListView listView;
 
-    private XMLParser xmlParser;
+    private ServiceStatus serviceStatus;
 
-    Thread thread;
     private PopulateList populateList;
 
     /**
@@ -57,16 +55,8 @@ public class ServiceStatusFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //TODO: Use AsyncTask/Service instead.
-        populateList = new PopulateList();
-        populateList.execute("http://web.mta.info/status/serviceStatus.txt");
-        /*thread = new Thread(this);
-        thread.start();
-        try {
-            thread.join();
-        } catch (InterruptedException e) {
-            Log.d(LOG_TAG, e.getMessage());
-        }*/
+        //populateList = new PopulateList();
+        //populateList.execute();
     }
 
     @Override
@@ -75,8 +65,14 @@ public class ServiceStatusFragment extends Fragment {
         rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
         listView = (ListView)rootView.findViewById(R.id.status_list);
-        //listView.setAdapter(new StatusList(rootView.getContext(), xmlParser));
 
+        listView.setAdapter(new StatusListAdapter(rootView.getContext()));
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                ((MainActivity)getActivity()).onStatusClicked(); //TODO: Add string to onStatusClicked for the status info found
+            }
+        });
         return rootView;
     }
 
@@ -87,17 +83,7 @@ public class ServiceStatusFragment extends Fragment {
                 getArguments().getInt(ARG_SECTION_NUMBER));
     }
 
-    /*@Override
-    public void run() {
-        try {
-            xmlParser = new XMLParser("http://web.mta.info/status/serviceStatus.txt");
-            xmlParser.parse();
-        } catch (ParserConfigurationException | SAXException | IOException e) {
-            Log.d(LOG_TAG, e.getMessage());
-        }
-    }*/
-
-    private class PopulateList extends AsyncTask<String, Void, Void> {
+    private class PopulateList extends AsyncTask<Void, Void, Void> {
 
         @Override
         protected void onPreExecute() {
@@ -105,12 +91,13 @@ public class ServiceStatusFragment extends Fragment {
         }
 
         @Override
-        protected Void doInBackground(String... params) {
+        protected Void doInBackground(Void... params) {
+
+            Serializer serializer = new Persister();
             try {
-                xmlParser = new XMLParser(params[0]);
-                xmlParser.parse();
-            } catch (ParserConfigurationException | SAXException | IOException e) {
-                Log.d(LOG_TAG, e.getMessage());
+                ServiceStatusFragment.this.serviceStatus = serializer.read(ServiceStatus.class, getActivity().getResources().openRawResource(R.raw.servicestatus));
+            } catch (Exception e) {
+                e.printStackTrace();
             }
 
             return null;
@@ -119,8 +106,7 @@ public class ServiceStatusFragment extends Fragment {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-
-            listView.setAdapter(new StatusList(rootView.getContext(), xmlParser));
+            listView.setAdapter(new StatusListAdapter(rootView.getContext()));
         }
     }
 }

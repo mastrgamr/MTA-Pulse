@@ -9,8 +9,12 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import net.mastrgamr.mtapulse.feedobjects.TransportationType;
+import net.mastrgamr.mtapulse.live_service.Line;
+import net.mastrgamr.mtapulse.live_service.ServiceStatus;
 import net.mastrgamr.mtapulse.tools.XMLParser;
 
+import org.simpleframework.xml.Serializer;
+import org.simpleframework.xml.core.Persister;
 import org.w3c.dom.Text;
 
 import java.util.List;
@@ -25,28 +29,29 @@ public class StatusListAdapter extends BaseAdapter
     private final String LOG_TAG = StatusListAdapter.class.getSimpleName();
 
     private Context c;
-    private XMLParser xmlParser;
+    private ServiceStatus serviceStatus = new ServiceStatus();
 
-    //private TextView lineText;
-    //private TextView statusText;
-    //private TextView dateTimeText;
-
-    public StatusListAdapter(Context c, XMLParser xmlParser){
+    public StatusListAdapter(Context c){
         this.c = c;
-        this.xmlParser = xmlParser;
+        Serializer serializer = new Persister();
+        try {
+            serviceStatus = serializer.read(ServiceStatus.class, c.getResources().openRawResource(R.raw.servicestatus));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public int getCount()
     {
-        return xmlParser.getTransportationTypes().size();
+        return serviceStatus.getSubways().size();
     }
 
     @Override
     public Object getItem(int position)
     {
-        System.out.println(xmlParser.getTransportationTypes().get(position));
-        return xmlParser.getTransportationTypes().get(position);
+        System.out.println(serviceStatus.getSubways().get(position));
+        return serviceStatus.getSubways().get(position);
     }
 
     //May need in order to reference the transit types in the ArrayList.
@@ -85,10 +90,17 @@ public class StatusListAdapter extends BaseAdapter
             srih = (StatusRowItemHolder)convertView.getTag();
         }
 
-        TransportationType transitType = xmlParser.getTransportationTypes().get(position);
+        Line transitType = serviceStatus.getSubways().get(position);
+
+        /*if(srih.lineText.getText().equals("123"))
+            convertView.setBackgroundColor(c.getResources().getColor(R.color.s123));
+        if(srih.lineText.getText().equals("456"))
+            convertView.setBackgroundColor(c.getResources().getColor(R.color.s456));
+        if(srih.lineText.getText().equals("7"))
+            convertView.setBackgroundColor(c.getResources().getColor(R.color.s7));*/
 
         srih.lineText.setText(transitType.getName());
-        if(transitType.getDate().equals("") || transitType.getTime().equals("")){
+        if(transitType.getDate() == null || transitType.getTime() == null){
             srih.dateTimeText.setText("");
         } else {
             srih.dateTimeText.setText("Updated: " + transitType.getDate() + ", at " + transitType.getTime());
@@ -102,11 +114,8 @@ public class StatusListAdapter extends BaseAdapter
                 transitType.getStatus().equalsIgnoreCase("Planned Detour")){
             srih.statusText.setText(transitType.getStatus());
             srih.statusText.setTextColor(c.getResources().getColor(R.color.yellow));
-        } else if(transitType.getStatus().equalsIgnoreCase("Delays"))
-        {
-            srih.statusText.setText(transitType.getStatus());
-            srih.statusText.setTextColor(c.getResources().getColor(R.color.red));
-        }else if(transitType.getStatus().equalsIgnoreCase("Suspended"))
+        } else if(transitType.getStatus().equalsIgnoreCase("Delays") ||
+                transitType.getStatus().equalsIgnoreCase("Suspended"))
         {
             srih.statusText.setText(transitType.getStatus());
             srih.statusText.setTextColor(c.getResources().getColor(R.color.red));

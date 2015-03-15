@@ -5,6 +5,10 @@ package net.mastrgamr.mtapulse.feedobjects;
  * Author: Stuart Smith
  * Date: 1/23/2015
  */
+
+/**
+ * Used for the StatusList. For now.
+ */
 public class TransportationType {
 
     private String name;
