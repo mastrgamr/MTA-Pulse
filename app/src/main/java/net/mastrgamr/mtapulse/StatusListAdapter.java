@@ -30,6 +30,7 @@ public class StatusListAdapter extends BaseAdapter
 
     private Context c;
     private ServiceStatus serviceStatus = new ServiceStatus();
+    private Line transitType;
 
     public StatusListAdapter(Context c){
         this.c = c;
@@ -90,7 +91,7 @@ public class StatusListAdapter extends BaseAdapter
             srih = (StatusRowItemHolder)convertView.getTag();
         }
 
-        Line transitType = serviceStatus.getSubways().get(position);
+        transitType = serviceStatus.getSubways().get(position);
 
         /*if(srih.lineText.getText().equals("123"))
             convertView.setBackgroundColor(c.getResources().getColor(R.color.s123));
@@ -122,5 +123,9 @@ public class StatusListAdapter extends BaseAdapter
         }
 
         return convertView;
+    }
+
+    public String getStatusText(int position){
+        return serviceStatus.getSubways().get(position).getText();
     }
 }

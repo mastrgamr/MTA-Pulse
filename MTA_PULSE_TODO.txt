@@ -1,4 +1,8 @@
+FINISHED:
 implement StikkyHeaders
+implemented status information, open a fragment
+
+TODO:
 When TripFragment is open, search nearby stations; populate list below with those stops (as routes)
 -if stop is within radius lookup stopId
 -list item layout contain [route][nearby stop name]

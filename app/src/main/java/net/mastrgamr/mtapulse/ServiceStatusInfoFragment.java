@@ -7,6 +7,7 @@ import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 
 /**
@@ -20,10 +21,11 @@ import android.view.ViewGroup;
 public class ServiceStatusInfoFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
+    private static final String STATUS_TEXT = "statusText";
 
     // TODO: Rename and change types of parameters
-    private String mParam1;
+    private String serviceStatusText;
+    private TextView statusInfo;
 
     private OnStatusClickedListener mListener;
 
@@ -31,14 +33,14 @@ public class ServiceStatusInfoFragment extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param param1 Parameter 1.
+     * @param text Text received from ServiceStatus.
      * @return A new instance of fragment ServiceStatusInfoFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static ServiceStatusInfoFragment newInstance(String param1) {
+    public static ServiceStatusInfoFragment newInstance(String text) {
         ServiceStatusInfoFragment fragment = new ServiceStatusInfoFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
+        args.putString(STATUS_TEXT, text);
         fragment.setArguments(args);
         return fragment;
     }
@@ -51,7 +53,7 @@ public class ServiceStatusInfoFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
+            serviceStatusText = getArguments().getString(STATUS_TEXT);
         }
     }
 
@@ -59,14 +61,12 @@ public class ServiceStatusInfoFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_service_status_info, container, false);
-    }
+        View v = inflater.inflate(R.layout.fragment_service_status_info, container, false);
+        //serviceStatusText = getArguments().getString(STATUS_TEXT);
+        statusInfo = (TextView)v.findViewById(R.id.statusText);
+        statusInfo.setText(serviceStatusText);
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(String string) {
-        if (mListener != null) {
-            mListener.onStatusClicked();
-        }
+        return v;
     }
 
     @Override
@@ -88,7 +88,7 @@ public class ServiceStatusInfoFragment extends Fragment {
 
     public interface OnStatusClickedListener {
         // TODO: Pass string of service change into this.
-        public void onStatusClicked();
+        public void onStatusClicked(String string);
     }
 
 }

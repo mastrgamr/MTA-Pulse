@@ -34,6 +34,7 @@ public class ServiceStatusFragment extends Fragment {
     private ListView listView;
 
     private ServiceStatus serviceStatus;
+    private StatusListAdapter statusListAdapter;
 
     private PopulateList populateList;
 
@@ -64,13 +65,16 @@ public class ServiceStatusFragment extends Fragment {
                              Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
+        statusListAdapter = new StatusListAdapter(rootView.getContext());
+
         listView = (ListView)rootView.findViewById(R.id.status_list);
 
-        listView.setAdapter(new StatusListAdapter(rootView.getContext()));
+        listView.setAdapter(statusListAdapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                ((MainActivity)getActivity()).onStatusClicked(); //TODO: Add string to onStatusClicked for the status info found
+                if(statusListAdapter.getStatusText(position) != null)
+                    ((MainActivity)getActivity()).onStatusClicked(statusListAdapter.getStatusText(position)); //TODO: Add string to onStatusClicked for the status info found
             }
         });
         return rootView;

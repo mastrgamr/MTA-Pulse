@@ -10,10 +10,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.support.v4.widget.DrawerLayout;
 
-public class MainActivity extends ActionBarActivity
-        implements NavigationDrawerFragment.NavigationDrawerCallbacks, ServiceStatusInfoFragment.OnStatusClickedListener {
+public class MainActivity extends ActionBarActivity implements
+        NavigationDrawerFragment.NavigationDrawerCallbacks,
+        ServiceStatusInfoFragment.OnStatusClickedListener {
 
     private final String LOG_TAG = getClass().getSimpleName();
+    private static final String STATUS_TEXT = "statusText";
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -118,8 +120,12 @@ public class MainActivity extends ActionBarActivity
     }
 
     @Override
-    public void onStatusClicked() {
-        ServiceStatusInfoFragment fragment = ServiceStatusInfoFragment.newInstance("HERRO");
+    public void onStatusClicked(String status) {
+        ServiceStatusInfoFragment fragment = ServiceStatusInfoFragment.newInstance("HERRoOoOO");
+
+        Bundle sendArgs = new Bundle();
+        sendArgs.putString(STATUS_TEXT, status);
+        fragment.setArguments(sendArgs);
         fragmentManager.beginTransaction()
                 .replace(R.id.container, fragment)
                 .addToBackStack(null)
