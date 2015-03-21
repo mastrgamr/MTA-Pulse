@@ -17,7 +17,7 @@ import java.util.HashMap;
  * Creates a serialized version of data read in from the static GTFS feed.
  *
  * To use, initialize a new {@link net.mastrgamr.mtapulse.tools.DataMaps}, and include the Class in
- * the '<>'. Remember to call the {@link net.mastrgamr.mtapulse.tools.DataMaps#serialize(Object)} class
+ * the '<>'. Remember to call the {@link net.mastrgamr.mtapulse.tools.DataMaps#serialize(Class)} class
  * before operating utilizing the instance.
  *
  * @param <T> Static GTFS data: agency, calendar, calendar_dates, routes, shapes, stop_times, stops,
@@ -29,12 +29,12 @@ public class DataMaps<T> extends HashMap<String, T>{
 
     private String serializedData;
 
-    public void serialize(T t) {
-        this.t = t;
+    public void serialize(Class<?> cls) {
+        //this.t = t;
         try {
-            if(t instanceof Routes) {
+            if(cls.equals(Routes.class)) {
                 serializedData = "routeMap.ser";
-            } else if(t instanceof Stops) {
+            } else if(cls.equals(Stops.class)) {
                 serializedData = "stopMap.ser";
             }
             FileOutputStream fos = new FileOutputStream(serializedData);
@@ -47,14 +47,14 @@ public class DataMaps<T> extends HashMap<String, T>{
         }
     }
 
-    public HashMap getMap(T t) {
+    public HashMap getMap(Class<?> cls) {
         //De-serialize map stored in memory
         HashMap map = null;
         try
         {
-            if(t instanceof Routes) {
+            if(cls.equals(Routes.class)) {
                 serializedData = "routeMap.ser";
-            } else if(t instanceof Stops) {
+            } else if(cls.equals(Stops.class)) {
                 serializedData = "stopMap.ser";
             }
             FileInputStream fis = new FileInputStream(serializedData);

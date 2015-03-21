@@ -1,6 +1,7 @@
 package net.mastrgamr.mtapulse;
 
 import android.content.Context;
+import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,17 +30,18 @@ public class StatusListAdapter extends BaseAdapter
     private final String LOG_TAG = StatusListAdapter.class.getSimpleName();
 
     private Context c;
-    private ServiceStatus serviceStatus = new ServiceStatus();
+    private ServiceStatus serviceStatus;
     private Line transitType;
 
-    public StatusListAdapter(Context c){
+    public StatusListAdapter(Context c, ServiceStatus s){
         this.c = c;
         Serializer serializer = new Persister();
-        try {
+        this.serviceStatus = s;
+        /*try {
             serviceStatus = serializer.read(ServiceStatus.class, c.getResources().openRawResource(R.raw.servicestatus));
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
     }
 
     @Override
@@ -51,7 +53,7 @@ public class StatusListAdapter extends BaseAdapter
     @Override
     public Object getItem(int position)
     {
-        System.out.println(serviceStatus.getSubways().get(position));
+        //System.out.println(serviceStatus.getSubways().get(position));
         return serviceStatus.getSubways().get(position);
     }
 
@@ -62,7 +64,7 @@ public class StatusListAdapter extends BaseAdapter
         return 0;
     }
 
-    static class StatusRowItemHolder {
+    private static class StatusRowItemHolder {
         TextView lineText;
         TextView statusText;
         TextView dateTimeText;
@@ -74,6 +76,7 @@ public class StatusListAdapter extends BaseAdapter
     {
         StatusRowItemHolder srih;
 
+        //Inflate the row items
         if(convertView == null)
         {
             LayoutInflater inflater = (LayoutInflater) c.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -91,16 +94,19 @@ public class StatusListAdapter extends BaseAdapter
             srih = (StatusRowItemHolder)convertView.getTag();
         }
 
+        //Set up data to be displayed in the views
         transitType = serviceStatus.getSubways().get(position);
 
-        /*if(srih.lineText.getText().equals("123"))
-            convertView.setBackgroundColor(c.getResources().getColor(R.color.s123));
-        if(srih.lineText.getText().equals("456"))
-            convertView.setBackgroundColor(c.getResources().getColor(R.color.s456));
-        if(srih.lineText.getText().equals("7"))
-            convertView.setBackgroundColor(c.getResources().getColor(R.color.s7));*/
-
         srih.lineText.setText(transitType.getName());
+
+        /*if(transitType.getName().equals("123")) {
+            convertView.setBackgroundColor(c.getResources().getColor(R.color.s123));
+        } else if(transitType.getName().equals("456")) {
+            convertView.setBackgroundColor(c.getResources().getColor(R.color.s456));
+        } else if(transitType.getName().equals("7")) {
+            convertView.setBackgroundColor(c.getResources().getColor(R.color.s7));
+        }*/
+
         if(transitType.getDate() == null || transitType.getTime() == null){
             srih.dateTimeText.setText("");
         } else {
@@ -126,6 +132,8 @@ public class StatusListAdapter extends BaseAdapter
     }
 
     public String getStatusText(int position){
-        return serviceStatus.getSubways().get(position).getText();
+        if(serviceStatus.getSubways().get(position).getText() != null)
+            return Html.fromHtml(serviceStatus.getSubways().get(position).getText()).toString();
+        return null;
     }
 }

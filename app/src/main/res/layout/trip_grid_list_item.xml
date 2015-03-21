@@ -33,28 +33,6 @@
         android:layout_alignLeft="@+id/dest_text"
         android:layout_alignStart="@+id/dest_text" />
 
-    <ImageView
-        android:layout_width="20dp"
-        android:layout_height="wrap_content"
-        android:id="@+id/imageView"
-        android:src="@drawable/live_feed_right"
-        android:scaleType="fitCenter"
-        android:layout_alignTop="@+id/static_time_text"
-        android:layout_toRightOf="@+id/live_time_text"
-        android:layout_toEndOf="@+id/live_time_text"
-        android:layout_alignBottom="@+id/static_time_text" />
-
-    <ImageView
-        android:layout_width="20dp"
-        android:layout_height="wrap_content"
-        android:id="@+id/imageView2"
-        android:src="@drawable/live_feed_left"
-        android:scaleType="fitCenter"
-        android:layout_alignTop="@+id/live_time_text"
-        android:layout_toLeftOf="@+id/route_text"
-        android:layout_toStartOf="@+id/route_text"
-        android:layout_alignBottom="@+id/live_time_text" />
-
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

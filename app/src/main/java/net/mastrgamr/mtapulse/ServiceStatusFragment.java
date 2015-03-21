@@ -14,11 +14,17 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import net.mastrgamr.mtapulse.live_service.ServiceStatus;
+import net.mastrgamr.mtapulse.tools.MtaFeeds;
 
 import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 /**
  * Project: MTA Pulse
@@ -29,6 +35,7 @@ public class ServiceStatusFragment extends Fragment {
 
     private final String LOG_TAG = getTag();
     private static final String ARG_SECTION_NUMBER = "section_number";
+    private URL url;
 
     private View rootView;
     private ListView listView;
@@ -50,14 +57,20 @@ public class ServiceStatusFragment extends Fragment {
         return fragment;
     }
 
-    public ServiceStatusFragment() { }
+    public ServiceStatusFragment() {
+        try {
+            url = new URL(MtaFeeds.serviceStatus);
+        } catch (MalformedURLException e) {
+            Log.e(LOG_TAG, e.getMessage());
+        }
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //populateList = new PopulateList();
-        //populateList.execute();
+        populateList = new PopulateList();
+        populateList.execute();
     }
 
     @Override
@@ -65,16 +78,19 @@ public class ServiceStatusFragment extends Fragment {
                              Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
-        statusListAdapter = new StatusListAdapter(rootView.getContext());
+        //statusListAdapter = new StatusListAdapter(rootView.getContext());
 
         listView = (ListView)rootView.findViewById(R.id.status_list);
 
-        listView.setAdapter(statusListAdapter);
+        //needed for back button from another fragment/activity
+        if(statusListAdapter != null)
+            listView.setAdapter(statusListAdapter);
+
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if(statusListAdapter.getStatusText(position) != null)
-                    ((MainActivity)getActivity()).onStatusClicked(statusListAdapter.getStatusText(position)); //TODO: Add string to onStatusClicked for the status info found
+                    ((MainActivity)getActivity()).onStatusClicked(statusListAdapter.getStatusText(position));
             }
         });
         return rootView;
@@ -99,7 +115,8 @@ public class ServiceStatusFragment extends Fragment {
 
             Serializer serializer = new Persister();
             try {
-                ServiceStatusFragment.this.serviceStatus = serializer.read(ServiceStatus.class, getActivity().getResources().openRawResource(R.raw.servicestatus));
+                serviceStatus = serializer.read(ServiceStatus.class, url.openStream());
+                statusListAdapter = new StatusListAdapter(rootView.getContext(), serviceStatus);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -110,7 +127,7 @@ public class ServiceStatusFragment extends Fragment {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            listView.setAdapter(new StatusListAdapter(rootView.getContext()));
+            listView.setAdapter(statusListAdapter);
         }
     }
 }

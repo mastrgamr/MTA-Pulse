@@ -13,9 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.TextView;
 
-import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -52,7 +50,6 @@ public class TripFragment extends Fragment implements OnMapReadyCallback
     private GoogleMap gMap;
     private MapView mapView;
     private HeaderGridView subwayList;
-    FloatingActionButton fab;
 
     private Routes routes;
     private Shapes shapes;
@@ -78,16 +75,10 @@ public class TripFragment extends Fragment implements OnMapReadyCallback
         stopsList = new ArrayList<>();
 
         InputStream input = getActivity().getResources().openRawResource(R.raw.routes);
-        BufferedReader rbr = new BufferedReader(new InputStreamReader(input));
-
-        InputStream sInput = getActivity().getResources().openRawResource(R.raw.shapesex);
-        BufferedReader sbr = new BufferedReader(new InputStreamReader(sInput));
-
-        InputStream stInput = getActivity().getResources().openRawResource(R.raw.stops);
-        BufferedReader stbr = new BufferedReader(new InputStreamReader(stInput));
+        BufferedReader br = new BufferedReader(new InputStreamReader(input));
 
         try {
-            CSVParser csvParser = new CSVParser(rbr,
+            CSVParser csvParser = new CSVParser(br,
                     CSVFormat.DEFAULT.withHeader("route_id" , "agency_id", "route_short_name", "route_long_name",
                             "route_desc", "route_type", "route_url", "route_color", "route_text_color"));
 
@@ -104,7 +95,10 @@ public class TripFragment extends Fragment implements OnMapReadyCallback
                 routeIds.add(routes.getRouteId());
             }
 
-            csvParser = new CSVParser(sbr,
+            input = getActivity().getResources().openRawResource(R.raw.shapesex);
+            br = new BufferedReader(new InputStreamReader(input));
+
+            csvParser = new CSVParser(br,
                     CSVFormat.DEFAULT.withHeader("shape_id", "shape_pt_lat", "shape_pt_lon", "shape_pt_sequence", "shape_dist_traveled"));
             for(CSVRecord record : csvParser){
                 if(csvParser.getCurrentLineNumber() == CSV_HEADER)
@@ -115,7 +109,10 @@ public class TripFragment extends Fragment implements OnMapReadyCallback
                 shapesList.add(shapes);
             }
 
-            csvParser = new CSVParser(stbr,
+            input = getActivity().getResources().openRawResource(R.raw.stops);
+            br = new BufferedReader(new InputStreamReader(input));
+
+            csvParser = new CSVParser(br,
                     CSVFormat.DEFAULT.withHeader("stop_id", "stop_code", "stop_name", "stop_desc", "stop_lat", "stop_lon", "zone_id", "stop_url", "location_type", "parent_station"));
             for(CSVRecord record : csvParser){
                 if(csvParser.getCurrentLineNumber() == CSV_HEADER)
@@ -152,6 +149,7 @@ public class TripFragment extends Fragment implements OnMapReadyCallback
                 .setHeader(R.id.mapLayout, (ViewGroup)getView())
                 .build();
 
+        //TODO: Create LiveTripListAdapter and set up this gridView
         ArrayAdapter routesAdapter =
                 new ArrayAdapter<>(getActivity(),
                         R.layout.trip_grid_list_item,
