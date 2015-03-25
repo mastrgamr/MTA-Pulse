@@ -1,6 +1,5 @@
 package net.mastrgamr.mtapulse;
 
-import android.content.Intent;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -9,7 +8,6 @@ import android.view.MenuItem;
 
 public class TripActivity extends ActionBarActivity
 {
-    TripFragment tripFragment = new TripFragment();
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -25,8 +23,6 @@ public class TripActivity extends ActionBarActivity
                     .add(R.id.container, new TripFragment())
                     .commit();
         }
-
-        Intent blah = new Intent();
     }
 
 

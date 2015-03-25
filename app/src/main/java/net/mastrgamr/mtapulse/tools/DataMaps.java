@@ -1,9 +1,16 @@
 package net.mastrgamr.mtapulse.tools;
 
+import android.content.Context;
+
 import net.mastrgamr.mtapulse.gtfs_static.Routes;
 import net.mastrgamr.mtapulse.gtfs_static.Stops;
 
-import java.io.*;
+
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.HashMap;
 
 /**
@@ -26,8 +33,13 @@ import java.util.HashMap;
 public class DataMaps<T> extends HashMap<String, T>{
 
     private T t;
+    private transient Context context;
 
     private String serializedData;
+
+    public DataMaps(Context c){
+        this.context = c;
+    }
 
     public void serialize(Class<?> cls) {
         //this.t = t;
@@ -37,7 +49,7 @@ public class DataMaps<T> extends HashMap<String, T>{
             } else if(cls.equals(Stops.class)) {
                 serializedData = "stopMap.ser";
             }
-            FileOutputStream fos = new FileOutputStream(serializedData);
+            FileOutputStream fos = context.openFileOutput(serializedData, Context.MODE_PRIVATE);//new FileOutputStream(serializedData);
             ObjectOutputStream oos = new ObjectOutputStream(fos);
             oos.writeObject(this);
             oos.close();
@@ -57,7 +69,7 @@ public class DataMaps<T> extends HashMap<String, T>{
             } else if(cls.equals(Stops.class)) {
                 serializedData = "stopMap.ser";
             }
-            FileInputStream fis = new FileInputStream(serializedData);
+            FileInputStream fis = context.openFileInput(serializedData);//new FileInputStream(serializedData);
             ObjectInputStream ois = new ObjectInputStream(fis);
             map = (HashMap)ois.readObject();
             ois.close();

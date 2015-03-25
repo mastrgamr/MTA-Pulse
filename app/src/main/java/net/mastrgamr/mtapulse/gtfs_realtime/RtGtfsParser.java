@@ -15,6 +15,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Date;
 
 /**
@@ -137,10 +138,17 @@ public class RtGtfsParser {
         }
     }
 
+	public class TrainStop{
+        public TripUpdate.StopTimeUpdate stu;
+        public String routeId;
+    }
+
     /**
      * Returns trains for specific stop.
      */
-    public void getTrainsForStop(String stopId){
+    public ArrayList<TrainStop> getTrainsForStop(String stopId){
+		ArrayList<TrainStop> trainStopList = new ArrayList<TrainStop>();
+        TrainStop trainStop;
         for(FeedEntity entity : feedMessage.getEntityList())
         {
             if(!entity.hasTripUpdate())
@@ -156,12 +164,17 @@ public class RtGtfsParser {
                             Log.d(LOG_TAG, "STOPTIMEUPDATE");
                             Log.d(LOG_TAG, "------" + stopId + "------");
                         }
-                        System.out.print(entity.getTripUpdate().getTrip().getRouteId() + " Train -- ");
-                        System.out.println(stu.getStopId() + " arriving at " + new Date(stopTimeUpdate.getArrival().getTime() * 1000) + " -- Arrival Time Converted");
+                        //System.out.print(entity.getTripUpdate().getTrip().getRouteId() + " Train -- ");
+                        //System.out.println(stu.getStopId() + " arriving at " + new Date(stopTimeUpdate.getArrival().getTime() * 1000) + " -- Arrival Time Converted");
+						trainStop = new TrainStop();
+                        trainStop.routeId = entity.getTripUpdate().getTrip().getRouteId();
+                        trainStop.stu = stu;
+                        trainStopList.add(trainStop);
                         break;
                     }
                 }
             }
         }
+	return trainStopList;
     }
 }

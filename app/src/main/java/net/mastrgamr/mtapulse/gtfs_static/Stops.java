@@ -22,7 +22,7 @@ public class Stops implements Serializable{
     private String stopLat;
     private String stopLon;
 
-    private PointD point;
+    //private PointD point;
 
     public Stops() { }
 
@@ -31,14 +31,14 @@ public class Stops implements Serializable{
         stopName = name;
         stopLat = lat;
         stopLon = lon;
-        point = new PointD(Double.parseDouble(lat), Double.parseDouble(lon));
+        //point = new PointD(Double.parseDouble(lat), Double.parseDouble(lon));
     }
 
     public Stops(String name, String lat, String lon){
         stopName = name;
         stopLat = lat;
         stopLon = lon;
-        point = new PointD(Double.parseDouble(lat), Double.parseDouble(lon));
+        //point = new PointD(Double.parseDouble(lat), Double.parseDouble(lon));
     }
 
     @Override
@@ -62,7 +62,5 @@ public class Stops implements Serializable{
         return stopLon;
     }
 
-    public PointD getPoint() {
-        return point;
-    }
+    //public PointD getPoint() { return point; }
 }
