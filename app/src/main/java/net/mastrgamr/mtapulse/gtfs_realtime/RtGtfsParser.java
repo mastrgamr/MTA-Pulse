@@ -70,7 +70,7 @@ public class RtGtfsParser {
         /**
          * Get ALLLLL teh entitiez!!
          */
-        for (FeedEntity entity : feedMessage.getEntityList()) {
+        /*for (FeedEntity entity : feedMessage.getEntityList()) {
 
             TripUpdate tripUpdate = entity.getTripUpdate();
             VehiclePosition vehicle = entity.getVehicle();
@@ -125,7 +125,7 @@ public class RtGtfsParser {
             System.out.println(vehicle.getStopId() + " -- NEXT STOP");
             System.out.println(vehicle.getCurrentStatus().toString() + " -- STOP STATUS");
 
-            /*if(DEBUG) {
+            *//*if(DEBUG) {
                 Log.d(LOG_TAG, "ALERT");
                 Log.d(LOG_TAG, "----------------");
             }
@@ -134,8 +134,8 @@ public class RtGtfsParser {
                     continue;
                 //System.out.println(aler.toString() + " -- ALERT");
                 System.out.println(entity.getAlert().getHeaderText());
-            }*/ //TODO:Handle alerts later app version
-        }
+            }*//* //TODO:Handle alerts later app version
+        }*/
     }
 
 	public class TrainStop{
@@ -149,6 +149,7 @@ public class RtGtfsParser {
     public ArrayList<TrainStop> getTrainsForStop(String stopId){
 		ArrayList<TrainStop> trainStopList = new ArrayList<TrainStop>();
         TrainStop trainStop;
+
         for(FeedEntity entity : feedMessage.getEntityList())
         {
             if(!entity.hasTripUpdate())
@@ -160,6 +161,7 @@ public class RtGtfsParser {
                 {
                     if (stu.getStopId().equals(stopId)) 
                     {
+                        Log.d(LOG_TAG, "Found stop");
                         if(DEBUG) {
                             Log.d(LOG_TAG, "STOPTIMEUPDATE");
                             Log.d(LOG_TAG, "------" + stopId + "------");

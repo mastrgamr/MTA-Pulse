@@ -8,7 +8,11 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import net.mastrgamr.mtapulse.gtfs_realtime.RtGtfsParser;
+
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * Project: MTA Pulse
@@ -23,9 +27,11 @@ public class TripListAdapter extends BaseAdapter {
     private final String LOG_TAG = TripListAdapter.class.getSimpleName();
 
     private Context c;
+    private ArrayList<RtGtfsParser.TrainStop> tripList;
 
-    public TripListAdapter(Context context, ArrayList<String> tripList) {
+    public TripListAdapter(Context context, ArrayList<RtGtfsParser.TrainStop> tripList) {
         c = context;
+        this.tripList = tripList;
     }
 
     private static class TripGridItemHolder {
@@ -37,12 +43,12 @@ public class TripListAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        return 0;
+        return tripList.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return null;
+        return tripList.get(position);
     }
 
     @Override
@@ -74,6 +80,11 @@ public class TripListAdapter extends BaseAdapter {
             tgih = (TripGridItemHolder)convertView.getTag();
         }
 
+        tgih.routeText.setText(tripList.get(position).routeId);
+        //String time = new Date(tripList.get(position).stu.getDeparture().getTime() * 1000).toString();
+        long diff = (tripList.get(position).stu.getDeparture().getTime() * 1000) - new Date().getTime();
+        Log.d(LOG_TAG, (tripList.get(position).stu.getDeparture().getTime() * 1000) + " - " + new Date().getTime());
+        tgih.liveTimeText.setText(diff/60000 + " mins");
 
         return convertView;
     }

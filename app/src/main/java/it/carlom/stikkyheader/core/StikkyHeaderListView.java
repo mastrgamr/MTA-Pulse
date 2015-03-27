@@ -1,13 +1,14 @@
 package it.carlom.stikkyheader.core;
 
+
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.ListView;
+import android.widget.Space;
 
 public class StikkyHeaderListView extends StikkyHeader {
-
 
     private final ListView mListView;
     private AbsListView.OnScrollListener mDelegateOnScrollListener;
@@ -33,8 +34,7 @@ public class StikkyHeaderListView extends StikkyHeader {
 
     protected void createFakeHeader() {
 
-        mFakeHeader = new View(mContext);
-        mFakeHeader.setVisibility(View.INVISIBLE);
+        mFakeHeader = new Space(mContext);
 
         AbsListView.LayoutParams lp = new AbsListView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0);
         mFakeHeader.setLayoutParams(lp);

@@ -15,7 +15,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -27,11 +26,13 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.PolylineOptions;
 
+import net.mastrgamr.mtapulse.gtfs_realtime.RtGtfsParser;
 import net.mastrgamr.mtapulse.gtfs_static.Routes;
 import net.mastrgamr.mtapulse.gtfs_static.Shapes;
 import net.mastrgamr.mtapulse.gtfs_static.Stops;
 import net.mastrgamr.mtapulse.tools.DataMaps;
 import net.mastrgamr.mtapulse.tools.HeaderGridView;
+import net.mastrgamr.mtapulse.tools.StikkyHeaderBuilderEx;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -41,10 +42,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.Serializable;
 import java.util.ArrayList;
-
-import it.carlom.stikkyheader.core.StikkyHeaderBuilder;
+import java.util.concurrent.ExecutionException;
 
 //Will contain the schedule information of the MTA system.
 public class TripFragment extends Fragment implements
@@ -68,6 +67,9 @@ public class TripFragment extends Fragment implements
     private ArrayList<Shapes> shapesList;
     private ArrayList<Stops> stopsList;
 
+    private RtGtfsParser gtfsParser;
+    private TripListAdapter tripListAdapter;
+
     private DataGenerator dataGen;
     private DataMaps<Stops> stopsDataMap;
 
@@ -85,6 +87,8 @@ public class TripFragment extends Fragment implements
         shapesList = new ArrayList<>();
         stopsList = new ArrayList<>();
 
+        gtfsParser = new RtGtfsParser();
+
         stopsDataMap = new DataMaps<>(getActivity());
 
         dataGen = new DataGenerator();
@@ -96,6 +100,14 @@ public class TripFragment extends Fragment implements
                              Bundle savedInstanceState)
     {
         View rootView = inflater.inflate(R.layout.fragment_trip, container, false);
+
+        try {
+            dataGen.get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
 
         mapView = (MapView)rootView.findViewById(R.id.map);
         mapView.onCreate(savedInstanceState);//TODO: Potential bug? calling OnCreate inside OnCreateView
@@ -110,7 +122,7 @@ public class TripFragment extends Fragment implements
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        StikkyHeaderBuilder.stickTo(subwayList)
+        StikkyHeaderBuilderEx.stickTo(subwayList)
                 .setHeader(R.id.mapLayout, (ViewGroup)getView())
                 .build();
 
@@ -120,7 +132,7 @@ public class TripFragment extends Fragment implements
                         R.layout.trip_grid_list_item,
                         R.id.route_text,
                         routeIds);
-        subwayList.setAdapter(routesAdapter);
+        //subwayList.setAdapter(tripListAdapter);
     }
 
     @Override
@@ -166,15 +178,18 @@ public class TripFragment extends Fragment implements
             gMap.animateCamera(CameraUpdateFactory.newLatLngZoom(loc, 15f));
             track = false;
 
-            Log.d(LOG_TAG, "DeSerializing HashMaps");
-            Log.d(LOG_TAG, stopsDataMap.getMap(Stops.class).get("201").toString());
-            Log.d(LOG_TAG, "Finished DeSerializing HashMaps");
+//            Log.d(LOG_TAG, "DeSerializing HashMaps");
+//            Log.d(LOG_TAG, stopsDataMap.getMap(Stops.class).get("201").toString());
+//            Log.d(LOG_TAG, "Finished DeSerializing HashMaps");
         }
     }
 
     private class DataGenerator extends AsyncTask<Void, Void, Void>{
         @Override
         protected Void doInBackground(Void... params) {
+
+            gtfsParser.refreshFeed();
+
             InputStream input = getActivity().getResources().openRawResource(R.raw.routes);
             BufferedReader br = new BufferedReader(new InputStreamReader(input));
 
@@ -228,14 +243,20 @@ public class TripFragment extends Fragment implements
 
                 Log.d(LOG_TAG, "Finished Generating HashMaps");
 
-                Log.d(LOG_TAG, "Serializing HashMaps");
-                stopsDataMap.serialize(Stops.class);
-                Log.d(LOG_TAG, "Finished Serializing HashMaps");
-
             } catch (IOException e) {
                 Log.e(LOG_TAG, e.getMessage());
             }
             return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            Log.d(LOG_TAG, "Serializing HashMaps");
+            stopsDataMap.serialize(Stops.class);
+            Log.d(LOG_TAG, "Finished Serializing HashMaps");
+
+            tripListAdapter = new TripListAdapter(getActivity(), gtfsParser.getTrainsForStop("501S"));
+            subwayList.setAdapter(tripListAdapter);
         }
     }
 }

@@ -29,8 +29,8 @@ dependencies {
     compile 'com.android.support:appcompat-v7:21.0.3'
     compile files('libs/commons-csv-1.1.jar')
     compile files('libs/onebusaway-gtfs-realtime-api-1.1.1.jar')
-    compile files('libs/protobuf-java-2.6.1.jar')
     compile files('libs/simple-xml-2.7.1.jar')
+    compile files('libs/wire-runtime-1.7.0.jar')
     compile 'com.google.android.gms:play-services:6.5.87'
     compile 'com.android.support:recyclerview-v7:21.+'
 }

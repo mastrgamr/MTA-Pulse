@@ -12,16 +12,41 @@
         android:text="Route"
         android:id="@+id/route_text"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_alignParentLeft="true"
+        android:layout_alignStart="@+id/dest_text"
+        android:layout_alignLeft="@+id/dest_text"
+        android:layout_toRightOf="@+id/dest_text"
+        android:layout_toEndOf="@+id/dest_text"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Destination"
+        android:id="@+id/dest_text"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="33dp"
+        android:layout_alignTop="@+id/next_time_text" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="Past Time"
+        android:id="@+id/past_time_text"
+        android:textColor="@color/dim_foreground_material_dark"
+        android:layout_alignTop="@+id/route_text"
+        android:layout_alignLeft="@+id/live_time_text" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Live Time"
         android:id="@+id/live_time_text"
-        android:layout_marginTop="30dp"
-        android:layout_below="@+id/route_text"
-        android:layout_centerHorizontal="true" />
+        android:layout_toRightOf="@+id/dest_text"
+        android:layout_toEndOf="@+id/dest_text"
+        android:layout_marginLeft="25dp"
+        android:layout_marginStart="25dp"
+        android:layout_below="@+id/past_time_text" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -29,16 +54,19 @@
         android:text="Static Time"
         android:id="@+id/static_time_text"
         android:visibility="invisible"
-        android:layout_alignTop="@+id/live_time_text"
-        android:layout_alignLeft="@+id/dest_text"
-        android:layout_alignStart="@+id/dest_text" />
+        android:layout_alignLeft="@+id/live_time_text"
+        android:layout_alignStart="@+id/live_time_text"
+        android:layout_below="@+id/past_time_text" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Destination"
-        android:id="@+id/dest_text"
-        android:layout_below="@+id/route_text"
-        android:layout_centerHorizontal="true" />
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="Next Time"
+        android:id="@+id/next_time_text"
+        android:layout_below="@+id/live_time_text"
+        android:layout_alignLeft="@+id/live_time_text"
+        android:layout_alignStart="@+id/live_time_text"
+        android:textColor="@color/dim_foreground_material_dark" />
 
 </RelativeLayout>

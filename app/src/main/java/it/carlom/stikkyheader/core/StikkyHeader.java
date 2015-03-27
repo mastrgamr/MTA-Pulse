@@ -13,7 +13,7 @@ public abstract class StikkyHeader {
     protected int mMinHeightHeader;
     protected HeaderAnimator mHeaderAnimator;
     protected int mHeightHeader;
-    protected int mMaxHeaderTransaction;
+    protected int mMaxHeaderTranslation;
     protected View mFakeHeader;
 
     protected void measureHeaderHeight() {
@@ -25,11 +25,10 @@ public abstract class StikkyHeader {
             mHeader.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                 @Override
                 public void onGlobalLayout() {
+                    mHeader.getViewTreeObserver().removeGlobalOnLayoutListener(this);
                     int height = mHeader.getHeight();
-                    if (height > 0) {
-                        mHeader.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-                        setHeightHeader(height);
-                    }
+                    setHeightHeader(height);
+
                 }
             });
         } else {
@@ -52,23 +51,23 @@ public abstract class StikkyHeader {
         lpHeader.height = mHeightHeader;
         mHeader.setLayoutParams(lpHeader);
 
-        calculateMaxTransaction();
-        setupAnimator(); // update heights
+        calculateMaxTranslation();
+        mHeaderAnimator.setHeightHeader(mHeightHeader, mMaxHeaderTranslation);
     }
 
-    private void calculateMaxTransaction() {
-        mMaxHeaderTransaction = mMinHeightHeader - mHeightHeader;
+    private void calculateMaxTranslation() {
+        mMaxHeaderTranslation = mMinHeightHeader - mHeightHeader;
     }
 
     protected void setupAnimator() {
 
-        mHeaderAnimator.setupAnimator(mHeader, mMinHeightHeader, mHeightHeader, mMaxHeaderTransaction);
+        mHeaderAnimator.setupAnimator(mHeader, mMinHeightHeader, mHeightHeader, mMaxHeaderTranslation);
     }
 
 
     public void setMinHeightHeader(int minHeightHeader) {
         this.mMinHeightHeader = minHeightHeader;
-        calculateMaxTransaction();
+        calculateMaxTranslation();
     }
 
 
