@@ -8,11 +8,17 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import com.bluelinelabs.logansquare.LoganSquare;
+import com.facebook.shimmer.ShimmerFrameLayout;
+import com.google.transit.realtime.GtfsRealtime;
+
+import net.mastrgamr.mtapulse.gtfs_realtime.NearbyStopsInfo;
 import net.mastrgamr.mtapulse.gtfs_realtime.RtGtfsParser;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Project: MTA Pulse
@@ -27,28 +33,65 @@ public class TripListAdapter extends BaseAdapter {
     private final String LOG_TAG = TripListAdapter.class.getSimpleName();
 
     private Context c;
-    private ArrayList<RtGtfsParser.TrainStop> tripList;
+    private ArrayList<NearbyStopsInfo> nearbyStops;
+    private HashMap<String, HashMap<String, ArrayList<GtfsRealtime.TripUpdate.StopTimeUpdate>>> tripMap;
 
-    public TripListAdapter(Context context, ArrayList<RtGtfsParser.TrainStop> tripList) {
+    String[] keys;
+
+    public TripListAdapter(Context context, ArrayList<NearbyStopsInfo> nearbyStops) {
         c = context;
-        this.tripList = tripList;
+        this.nearbyStops = nearbyStops;
+        System.out.println(this.nearbyStops.size() + " size pased in Adapter");
+    }
+
+    public TripListAdapter(Context context, HashMap<String, HashMap<String, ArrayList<GtfsRealtime.TripUpdate.StopTimeUpdate>>> tripMap) {
+        c = context;
+        this.tripMap = tripMap;
+
+        int i = 0;
+        for(HashMap.Entry entry : tripMap.entrySet()){
+            if(entry.getKey().toString().endsWith("N"))
+                i++;
+        }
+        keys = new String[i];
+
+        i = 0;
+        for(HashMap.Entry entry : tripMap.entrySet()){
+            if(entry.getKey().toString().endsWith("N")){
+                keys[i] = entry.getKey().toString();
+                i++;
+            }
+        }
+
+        i = 0;
+        for(String s : keys){
+            System.out.println(s + " TRIPADAPTER");
+            for(HashMap.Entry entry : tripMap.get(keys[i]).entrySet()){
+                System.out.println(entry.getKey() + " key in entry");
+                i++;
+            }
+            i = 0;
+        }
     }
 
     private static class TripGridItemHolder {
         TextView routeText;
         TextView destText;
+        TextView prevText;
+        ShimmerFrameLayout shimmerLive;
         TextView liveTimeText;
         TextView staticTimeText;
     }
 
     @Override
     public int getCount() {
-        return tripList.size();
+        return nearbyStops.size();
     }
 
+    //Ignore for now
     @Override
     public Object getItem(int position) {
-        return tripList.get(position);
+        return nearbyStops.get(position);
     }
 
     @Override
@@ -71,6 +114,9 @@ public class TripListAdapter extends BaseAdapter {
             tgih = new TripGridItemHolder();
             tgih.routeText = (TextView) convertView.findViewById(R.id.route_text);
             tgih.destText = (TextView) convertView.findViewById(R.id.dest_text);
+            tgih.prevText = (TextView) convertView.findViewById(R.id.past_time_text);
+            tgih.shimmerLive = (ShimmerFrameLayout) convertView.findViewById(R.id.shimmer_live);
+            tgih.shimmerLive.startShimmerAnimation();
             tgih.liveTimeText = (TextView) convertView.findViewById(R.id.live_time_text);
             tgih.staticTimeText = (TextView) convertView.findViewById(R.id.static_time_text);
 
@@ -80,10 +126,20 @@ public class TripListAdapter extends BaseAdapter {
             tgih = (TripGridItemHolder)convertView.getTag();
         }
 
-        tgih.routeText.setText(tripList.get(position).routeId);
-        //String time = new Date(tripList.get(position).stu.getDeparture().getTime() * 1000).toString();
-        long diff = (tripList.get(position).stu.getDeparture().getTime() * 1000) - new Date().getTime();
-        Log.d(LOG_TAG, (tripList.get(position).stu.getDeparture().getTime() * 1000) + " - " + new Date().getTime());
+
+        long time = 0;
+        tgih.routeText.setText(nearbyStops.get(position).toString());
+        //time = tripMap.get(s).get(entry.getKey()).get(position).getArrival().getTime();
+
+        //long diff = stu.getDeparture().getTime() * 1000) - new Date().getTime();
+        //long time = tripMap.get("501N").get("5").get(0).getDeparture().getTime();
+        long diff = (time * 1000) - new Date().getTime();
+        Log.d(LOG_TAG, (time * 1000) +" - "+ new Date().getTime());
+        if(diff < 0){
+            tgih.prevText.setText(Math.abs(diff/60000) + " mins ago");
+        } else {
+            tgih.prevText.setText("");
+        }
         tgih.liveTimeText.setText(diff/60000 + " mins");
 
         return convertView;

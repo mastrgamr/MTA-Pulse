@@ -7,7 +7,7 @@ package net.mastrgamr.mtapulse.tools;
  */
 
 /**
- * "Scapegoat" class to avoid using LatLng in android project for Double point precision.
+ * "Scapegoat" class to avoid using LatLng and PointF in android project for Double point precision.
  */
 public class PointD {
 
@@ -21,19 +21,25 @@ public class PointD {
         this.y = y;
     }
 
-    public double getX() {
-        return x;
+    public double distance(PointD pt) {
+        double px = pt.getX() - this.getX();
+        double py = pt.getY() - this.getY();
+        return Math.sqrt(px * px + py * py);
     }
 
-    public void setX(double x) {
-        this.x = x;
+    public double getX() {
+        return x;
     }
 
     public double getY() {
         return y;
     }
 
-    public void setY(double y) {
-        this.y = y;
+    @Override
+    public String toString() {
+        return "PointD{" +
+                "x=" + x +
+                ", y=" + y +
+                '}';
     }
 }

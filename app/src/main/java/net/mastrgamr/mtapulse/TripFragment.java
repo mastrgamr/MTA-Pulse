@@ -8,8 +8,7 @@ package net.mastrgamr.mtapulse;
 
 import android.app.Fragment;
 import android.location.Location;
-import android.os.AsyncTask;
-import android.os.Bundle;
+import android.os.*;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,9 +17,12 @@ import android.widget.ArrayAdapter;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
@@ -56,6 +58,7 @@ public class TripFragment extends Fragment implements
     private GoogleMap gMap;
     private boolean track = true;
     private MapView mapView;
+    private MapFragment mapFragment;
     private HeaderGridView subwayList;
 
     private Routes routes;
@@ -87,7 +90,7 @@ public class TripFragment extends Fragment implements
         shapesList = new ArrayList<>();
         stopsList = new ArrayList<>();
 
-        gtfsParser = new RtGtfsParser();
+        gtfsParser = new RtGtfsParser(getActivity());
 
         stopsDataMap = new DataMaps<>(getActivity());
 
@@ -101,13 +104,13 @@ public class TripFragment extends Fragment implements
     {
         View rootView = inflater.inflate(R.layout.fragment_trip, container, false);
 
-        try {
-            dataGen.get();
+        /*try {
+            dataGen.get(); //wait for data to generate
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
             e.printStackTrace();
-        }
+        }*/
 
         mapView = (MapView)rootView.findViewById(R.id.map);
         mapView.onCreate(savedInstanceState);//TODO: Potential bug? calling OnCreate inside OnCreateView
@@ -119,26 +122,9 @@ public class TripFragment extends Fragment implements
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
-        StikkyHeaderBuilderEx.stickTo(subwayList)
-                .setHeader(R.id.mapLayout, (ViewGroup)getView())
-                .build();
-
-        //TODO: Create LiveTripListAdapter and set up this gridView
-        ArrayAdapter routesAdapter =
-                new ArrayAdapter<>(getActivity(),
-                        R.layout.trip_grid_list_item,
-                        R.id.route_text,
-                        routeIds);
-        //subwayList.setAdapter(tripListAdapter);
-    }
-
-    @Override
     public void onResume() {
-        mapView.onResume();
         super.onResume();
+        mapView.onResume();
     }
 
     @Override
@@ -151,6 +137,21 @@ public class TripFragment extends Fragment implements
     public void onLowMemory() {
         super.onLowMemory();
         mapView.onLowMemory();
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        /*if(gMap == null) {
+            mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
+            mapFragment.getMap();//.getMapAsync(this);
+        }*/
+
+        StikkyHeaderBuilderEx.stickTo(subwayList)
+                .setHeader(R.id.mapLayout, (ViewGroup)getView())
+                .build();
+        //subwayList.setAdapter(tripListAdapter);
     }
 
     @Override
@@ -170,18 +171,37 @@ public class TripFragment extends Fragment implements
 
     @Override
     public void onMyLocationChange(Location location) {
-
+        //40.800148, -73.945238 randomLoc for test
         if(track && location != null) {
             //Toast.makeText(this.getActivity(), "Map Loaded", Toast.LENGTH_SHORT).show();
             LatLng loc = new LatLng(location.getLatitude(),
                     location.getLongitude());
             gMap.animateCamera(CameraUpdateFactory.newLatLngZoom(loc, 15f));
-            track = false;
 
-//            Log.d(LOG_TAG, "DeSerializing HashMaps");
-//            Log.d(LOG_TAG, stopsDataMap.getMap(Stops.class).get("201").toString());
-//            Log.d(LOG_TAG, "Finished DeSerializing HashMaps");
+            //TODO: Set up efficient way to track location
+            //tripListAdapter = new TripListAdapter(getActivity(), gtfsParser.getStopsByLocation(location, stopsDataMap));
+            tripListAdapter = new TripListAdapter(getActivity(), gtfsParser.getStopsByLocationList(location, stopsDataMap));
+            subwayList.setAdapter(tripListAdapter);
+
+            /*Location mylocation = new Location("View Center"); //DEBUG STUFF!!
+            mylocation.setLatitude(40.800148);
+            mylocation.setLongitude(-73.945238);
+
+            tripListAdapter = new TripListAdapter(getActivity(), gtfsParser.getStopsByLocation(mylocation, stopsDataMap));
+            subwayList.setAdapter(tripListAdapter);*/
+            track = false;
         }
+    }
+
+    public void onCameraChange(CameraPosition cameraPosition) {
+        Log.d(LOG_TAG, "View Changed");
+        Location location = new Location("View Center");
+        location.setLatitude(cameraPosition.target.latitude);
+        location.setLongitude(cameraPosition.target.longitude);
+
+        tripListAdapter = new TripListAdapter(getActivity(), gtfsParser.getStopsByLocationList(location, stopsDataMap));
+        subwayList.setAdapter(tripListAdapter);
+        tripListAdapter.notifyDataSetChanged();
     }
 
     private class DataGenerator extends AsyncTask<Void, Void, Void>{
@@ -242,7 +262,6 @@ public class TripFragment extends Fragment implements
                 }
 
                 Log.d(LOG_TAG, "Finished Generating HashMaps");
-
             } catch (IOException e) {
                 Log.e(LOG_TAG, e.getMessage());
             }
@@ -255,8 +274,7 @@ public class TripFragment extends Fragment implements
             stopsDataMap.serialize(Stops.class);
             Log.d(LOG_TAG, "Finished Serializing HashMaps");
 
-            tripListAdapter = new TripListAdapter(getActivity(), gtfsParser.getTrainsForStop("501S"));
-            subwayList.setAdapter(tripListAdapter);
+            //gtfsParser.getTrainsForStop("501S");
         }
     }
 }

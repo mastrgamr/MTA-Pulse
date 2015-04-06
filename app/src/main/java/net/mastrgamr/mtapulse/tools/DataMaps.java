@@ -52,11 +52,18 @@ public class DataMaps<T> extends HashMap<String, T>{
                 serializedData = "stopMap.ser";
             }
 
-            FileOutputStream fos = new FileOutputStream(new File(context.getCacheDir(), serializedData));
-            ObjectOutputStream oos = new ObjectOutputStream(fos);
-            oos.writeObject(this);
-            oos.close();
-            fos.close();
+            File test = context.getFileStreamPath(serializedData);
+            if(!test.exists()){
+                Log.d("DataMaps", "FILE GETTING CREATED");
+
+                FileOutputStream fos = context.openFileOutput(serializedData, Context.MODE_PRIVATE);
+                ObjectOutputStream oos = new ObjectOutputStream(fos);
+                oos.writeObject(this);
+                oos.close();
+                fos.close();
+            } else {
+                Log.d("Datamaps", "FiLE EXISTS");
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -73,7 +80,7 @@ public class DataMaps<T> extends HashMap<String, T>{
                 serializedData = "stopMap.ser";
             }
 
-            FileInputStream fis = new FileInputStream(new File(context.getCacheDir(), serializedData));
+            FileInputStream fis = context.openFileInput(serializedData);
             ObjectInputStream ois = new ObjectInputStream(fis);
             map = (HashMap)ois.readObject();
             ois.close();
