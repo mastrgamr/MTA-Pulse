@@ -12,6 +12,7 @@ import net.mastrgamr.mtapulse.tools.DataMaps;
 import net.mastrgamr.mtapulse.tools.PointD;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 
 /**
@@ -21,10 +22,17 @@ import java.util.HashMap;
  */
 
 @JsonObject
-public class SurroundingStopsList extends ArrayList<NearbyStopsInfo> {
+public class SurroundingStopsList extends ArrayList<ArrayList<NearbyStopsInfo>> {
 
+    @JsonIgnore
+    public ArrayList<NearbyStopsInfo> nearbyNorth;
+    @JsonIgnore
+    public ArrayList<NearbyStopsInfo> nearbySouth;
     @JsonField
-    public NearbyStopsInfo nearby;
+    public ArrayList<ArrayList<NearbyStopsInfo>> nearbyStops;
+
+    @JsonIgnore
+    private NearbyStopsInfo nearby;
 
     @JsonIgnore
     private GtfsRealtime.FeedMessage feedMessage;
@@ -35,13 +43,19 @@ public class SurroundingStopsList extends ArrayList<NearbyStopsInfo> {
         this.feedMessage = feedMessage;
     }
 
-    public ArrayList<NearbyStopsInfo> getStopsByLocationList(Location loc, DataMaps<Stops> stopsDataMap){
+    public ArrayList<ArrayList<NearbyStopsInfo>> getStopsByLocationList(Location loc, DataMaps<Stops> stopsDataMap){
 
+        nearbyStops = new ArrayList<>();
+        nearbyNorth = new ArrayList<>();
+        nearbySouth = new ArrayList<>();
         nearby = new NearbyStopsInfo();
-        ArrayList<RTRoutes> upList;
-        ArrayList<RTRoutes> downList;
 
-        nearby.stops = new HashMap<>();
+        //placeholder nearbys
+        nearby = new NearbyStopsInfo();
+        nearby.stopId = "temp";
+        nearby.trains = new ArrayList<>();
+        nearbyNorth.add(nearby);
+        nearbySouth.add(nearby);
 
         for(GtfsRealtime.FeedEntity entity : feedMessage.getEntityList())
         {
@@ -61,44 +75,78 @@ public class SurroundingStopsList extends ArrayList<NearbyStopsInfo> {
                         if (stu.getStopId().equals(stopId)) {
 
                             //Check for down/uptown trainstop
-                            if(stu.getStopId().endsWith("N")){
-                                if(!nearby.stops.containsKey(stu.getStopId())){
-                                    upList = new ArrayList<>();
-                                    RTRoutes routes = new RTRoutes();
-                                    routes.stopTimes = new ArrayList<>();
-                                    routes.routeId = entity.getTripUpdate().getTrip().getRouteId();
-                                    routes.stopTimes.add(stu.getArrival().getTime());
-                                    upList.add(routes);
-                                    nearby.stops.put(stu.getStopId(), upList);
-                                } else if(nearby.stops.containsKey(stu.getStopId())){
-                                    RTRoutes routes;
-                                    for(int i = 0; i < nearby.stops.get(stu.getStopId()).size(); i++) {
-                                        routes = nearby.stops.get(stu.getStopId()).get(i);
+                            if (stu.getStopId().endsWith("N"))
+                            {
+                                boolean addNewNorth = false;
+                                //System.out.println("NORTHBOUND");
+                                for(NearbyStopsInfo nsi : nearbyNorth)
+                                {
+                                    if (!nsi.containsStop(nearbyNorth, stu.getStopId()))
+                                    {
+                                        addNewNorth = true;
+                                        //System.out.println("nearbyStop not in route");
+                                        nearby = new NearbyStopsInfo();
+                                        nearby.stopId = stu.getStopId();
+                                        //upList = new ArrayList<>();
+                                        RTRoutes routes = new RTRoutes();
+                                        routes.stopTimes = new ArrayList<>();
+                                        routes.routeId = entity.getTripUpdate().getTrip().getRouteId();
+                                        routes.stopTimes.add(stu.getArrival().getTime());
+                                        nearby.trains = new ArrayList<>();
+                                        nearby.trains.add(routes);
+                                        //nearbyNorth.add(nearby);
+                                    } else if (nsi.containsStop(nearbyNorth, stu.getStopId()))
+                                    {
+                                        //System.out.println("nearbyStop in route");
+                                        RTRoutes routes;
+                                        for (int i = 0; i < nsi.trains.size(); i++) {
+                                            routes = nsi.trains.get(i);
                                             if (routes.routeId.equals(entity.getTripUpdate().getTrip().getRouteId())) {
                                                 routes.stopTimes.add(stu.getArrival().getTime());
+                                                Collections.sort(routes.stopTimes);
                                                 break;
                                             }
-                                    }
-                                }
-                            } else if(stu.getStopId().endsWith("S")) {
-                                if(!nearby.stops.containsKey(stu.getStopId())){
-                                    downList = new ArrayList<>();
-                                    RTRoutes routes = new RTRoutes();
-                                    routes.stopTimes = new ArrayList<>();
-                                    routes.routeId = entity.getTripUpdate().getTrip().getRouteId();
-                                    routes.stopTimes.add(stu.getArrival().getTime());
-                                    downList.add(routes);
-                                    nearby.stops.put(stu.getStopId(), downList);
-                                } else if(nearby.stops.containsKey(stu.getStopId())){
-                                    RTRoutes routes;
-                                    for(int i = 0; i < nearby.stops.get(stu.getStopId()).size(); i++) {
-                                        routes = nearby.stops.get(stu.getStopId()).get(i);
-                                        if (routes.routeId.equals(entity.getTripUpdate().getTrip().getRouteId())) {
-                                            routes.stopTimes.add(stu.getArrival().getTime());
-                                            break;
                                         }
                                     }
                                 }
+                                if(addNewNorth)
+                                    nearbyNorth.add(nearby);
+                            }
+                            else if (stu.getStopId().endsWith("S"))
+                            {
+                                boolean addNewNorth = false;
+                                //System.out.println("SOUTHBOUND");
+                                for(NearbyStopsInfo nsi : nearbySouth)
+                                {
+                                    if (!nsi.containsStop(nearbySouth, stu.getStopId()))
+                                    {
+                                        addNewNorth = true;
+                                        //System.out.println("nearbyStop not in route");
+                                        nearby = new NearbyStopsInfo();
+                                        nearby.stopId = stu.getStopId();
+                                        //downList = new ArrayList<>();
+                                        RTRoutes routes = new RTRoutes();
+                                        routes.stopTimes = new ArrayList<>();
+                                        routes.routeId = entity.getTripUpdate().getTrip().getRouteId();
+                                        routes.stopTimes.add(stu.getArrival().getTime());
+                                        nearby.trains = new ArrayList<>();
+                                        nearby.trains.add(routes);
+                                        //nearbySouth.add(nearby);
+                                    } else if (nsi.containsStop(nearbySouth, stu.getStopId())) {
+                                        //System.out.println("nearbyStop  in route");
+                                        RTRoutes routes;
+                                        for (int i = 0; i < nsi.trains.size(); i++) {
+                                            routes = nsi.trains.get(i);
+                                            if (routes.routeId.equals(entity.getTripUpdate().getTrip().getRouteId())) {
+                                                routes.stopTimes.add(stu.getArrival().getTime());
+                                                Collections.sort(routes.stopTimes);
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+                                if(addNewNorth)
+                                    nearbySouth.add(nearby);
                             }
                             break;
                         }
@@ -106,6 +154,12 @@ public class SurroundingStopsList extends ArrayList<NearbyStopsInfo> {
                 }
             }
         }
+        nearbyNorth.remove(0);
+        nearbySouth.remove(0);
+        nearbyStops.add(nearbyNorth);
+        nearbyStops.add(nearbySouth);
+        this.add(nearbyNorth);
+        this.add(nearbySouth);
         return this;
     }
 }

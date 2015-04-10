@@ -13,6 +13,7 @@ import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.transit.realtime.GtfsRealtime;
 
 import net.mastrgamr.mtapulse.gtfs_realtime.NearbyStopsInfo;
+import net.mastrgamr.mtapulse.gtfs_realtime.RTRoutes;
 import net.mastrgamr.mtapulse.gtfs_realtime.RtGtfsParser;
 
 import java.util.ArrayList;
@@ -33,15 +34,17 @@ public class TripListAdapter extends BaseAdapter {
     private final String LOG_TAG = TripListAdapter.class.getSimpleName();
 
     private Context c;
-    private ArrayList<NearbyStopsInfo> nearbyStops;
+    private ArrayList<ArrayList<NearbyStopsInfo>> nearbyStops;
+    private ArrayList<NearbyStopsInfo> nearbyStops1;
+    private ArrayList<RTRoutes> nearbyStopRoutes;
     private HashMap<String, HashMap<String, ArrayList<GtfsRealtime.TripUpdate.StopTimeUpdate>>> tripMap;
 
     String[] keys;
 
-    public TripListAdapter(Context context, ArrayList<NearbyStopsInfo> nearbyStops) {
+    public TripListAdapter(Context context, ArrayList<ArrayList<NearbyStopsInfo>> nearbyStops) {
         c = context;
-        this.nearbyStops = nearbyStops;
-        System.out.println(this.nearbyStops.size() + " size pased in Adapter");
+        this.nearbyStops1 = nearbyStops.get(1);
+        System.out.println(this.nearbyStops1.size() + " size pased in Adapter");
     }
 
     public TripListAdapter(Context context, HashMap<String, HashMap<String, ArrayList<GtfsRealtime.TripUpdate.StopTimeUpdate>>> tripMap) {
@@ -85,13 +88,13 @@ public class TripListAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        return nearbyStops.size();
+        return nearbyStops1.size();
     }
 
     //Ignore for now
     @Override
     public Object getItem(int position) {
-        return nearbyStops.get(position);
+        return nearbyStops1.get(position);
     }
 
     @Override
@@ -126,14 +129,26 @@ public class TripListAdapter extends BaseAdapter {
             tgih = (TripGridItemHolder)convertView.getTag();
         }
 
-
         long time = 0;
-        tgih.routeText.setText(nearbyStops.get(position).toString());
+        long diff = 0;
+        nearbyStopRoutes = nearbyStops1.get(position).trains;
+        for(int i = 0; i < nearbyStopRoutes.size(); i++){
+            RTRoutes rtRoute = nearbyStopRoutes.get(i);
+            ArrayList<Long> stopTimes = rtRoute.stopTimes;
+            for(long stopTime: stopTimes){
+                time = stopTime;
+                diff = (time * 1000) - new Date().getTime();
+                if(diff >= 0) //if positive break out loop and set up the text
+                    break;
+            }
+        }
+
+        tgih.routeText.setText(nearbyStops1.get(position).stopId);
         //time = tripMap.get(s).get(entry.getKey()).get(position).getArrival().getTime();
 
         //long diff = stu.getDeparture().getTime() * 1000) - new Date().getTime();
         //long time = tripMap.get("501N").get("5").get(0).getDeparture().getTime();
-        long diff = (time * 1000) - new Date().getTime();
+        //long diff = (time * 1000) - new Date().getTime();
         Log.d(LOG_TAG, (time * 1000) +" - "+ new Date().getTime());
         if(diff < 0){
             tgih.prevText.setText(Math.abs(diff/60000) + " mins ago");

@@ -47,8 +47,8 @@ public class RtGtfsParser {
     public final static String LOG_TAG = RtGtfsParser.class.getSimpleName();
     private final static boolean DEBUG = true;
 
-    public static HashMap<String, HashMap<String, ArrayList<StopTimeUpdate>>> surroundingMap = new HashMap<>(); //last to put
-    private SurroundingStops nearbyStops;
+    //public static HashMap<String, HashMap<String, ArrayList<StopTimeUpdate>>> surroundingMap = new HashMap<>(); //last to put
+    //private SurroundingStops nearbyStops;
     private SurroundingStopsList nearbyStopsList;
 
     private Context c;
@@ -196,7 +196,7 @@ public class RtGtfsParser {
 	    return trainStopList;
     }
 
-    public HashMap<String, HashMap<String, ArrayList<StopTimeUpdate>>> getStopsByLocationMap(Location loc, DataMaps<Stops> stopsDataMap){
+    /*public HashMap<String, HashMap<String, ArrayList<StopTimeUpdate>>> getStopsByLocationMap(Location loc, DataMaps<Stops> stopsDataMap){
 
         nearbyStops = new SurroundingStops(feedMessage);
         HashMap<String, HashMap<String, ArrayList<StopTimeUpdate>>> closeStops = nearbyStops.getStopsByLocationMap(loc, stopsDataMap);
@@ -224,24 +224,21 @@ public class RtGtfsParser {
         }
 
         return closeStops;
-    }
+    }*/
 
-    public ArrayList<NearbyStopsInfo> getStopsByLocationList(Location loc, DataMaps<Stops> stopsDataMap){
+    public ArrayList<ArrayList<NearbyStopsInfo>> getStopsByLocationList(Location loc, DataMaps<Stops> stopsDataMap){
 
         nearbyStopsList = new SurroundingStopsList(feedMessage);
-        nearbyStopsList.getStopsByLocationList(loc, stopsDataMap);
-
-        ArrayList<NearbyStopsInfo> closeStops = new ArrayList<>(nearbyStopsList);
-        System.out.println(closeStops.size() + " closestops size");
-
+        //nearbyStopsList.getStopsByLocationList(loc, stopsDataMap);
+        ArrayList<ArrayList<NearbyStopsInfo>> nsiList = nearbyStopsList.getStopsByLocationList(loc, stopsDataMap);
 
         File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
         FileOutputStream file;
         try {
             file = new FileOutputStream(new File(path, "nearbyStopsList.json"));
-            LoganSquare.serialize(nearbyStopsList, file);
+            LoganSquare.serialize(nearbyStopsList.getStopsByLocationList(loc, stopsDataMap), file);
             System.out.println("SERIALIZED JSON!!");
-            String json = LoganSquare.serialize(nearbyStopsList);
+            String json = LoganSquare.serialize(nearbyStopsList.getStopsByLocationList(loc, stopsDataMap));
             System.out.println(json);
             file.close();
         } catch (FileNotFoundException e) {
@@ -250,7 +247,7 @@ public class RtGtfsParser {
             e.printStackTrace();
         }
 
-        return closeStops;
+        return nsiList;
     }
 
     /**
