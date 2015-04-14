@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.support.v4.widget.DrawerLayout;
+import android.widget.Toast;
 
 public class MainActivity extends ActionBarActivity implements
         NavigationDrawerFragment.NavigationDrawerCallbacks,
@@ -110,6 +111,10 @@ public class MainActivity extends ActionBarActivity implements
         if (id == R.id.action_settings) {
             return true;
         }
+        if (id == R.id.action_about) {
+            Intent i = new Intent(this, AboutActivity.class);
+            startActivity(i);
+        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -117,6 +122,11 @@ public class MainActivity extends ActionBarActivity implements
     @Override
     public void onBackPressed() {
         fragmentManager.popBackStack();
+
+        if(fragmentManager.getBackStackEntryCount() == 0){
+            Toast.makeText(this, "Are you sure you want to exit?", Toast.LENGTH_SHORT).show();
+            //super.onBackPressed();
+        }
     }
 
     @Override
