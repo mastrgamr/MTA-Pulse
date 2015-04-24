@@ -20,9 +20,13 @@ import net.mastrgamr.mtapulse.tools.MtaFeeds;
 import net.mastrgamr.mtapulse.tools.PointD;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -79,12 +83,12 @@ public class RtGtfsParser {
      * accessor fields.
      */
     public void refreshFeed() {
+        //TODO:Check if there is a cached FeedMessage already.
         try {
             factory = new EntityFactory(FeedMessage.parseFrom(url.openStream()), c);
             feedMessage = factory.publishEntity();
-            //System.out.println(feedMessage);
         } catch (IOException e) {
-            Log.e(LOG_TAG, e.getMessage());
+            e.printStackTrace();
         }
 
         if(DEBUG) {
@@ -196,40 +200,9 @@ public class RtGtfsParser {
 	    return trainStopList;
     }
 
-    /*public HashMap<String, HashMap<String, ArrayList<StopTimeUpdate>>> getStopsByLocationMap(Location loc, DataMaps<Stops> stopsDataMap){
-
-        nearbyStops = new SurroundingStops(feedMessage);
-        HashMap<String, HashMap<String, ArrayList<StopTimeUpdate>>> closeStops = nearbyStops.getStopsByLocationMap(loc, stopsDataMap);
-
-        nearbyStopsList = new SurroundingStopsList(feedMessage);
-
-        for(Map.Entry<String, HashMap<String, ArrayList<StopTimeUpdate>>> m : closeStops.entrySet()){
-            nearbyStops.put(m.getKey(), m.getValue());
-        }
-
-        File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-        FileOutputStream file = null;
-        try {
-            file = new FileOutputStream(new File(path, "nearbyStops.json"));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        try {
-            LoganSquare.serialize(nearbyStops, file);
-            System.out.println("SERIALIZED JSON!!");
-            if(file != null)
-                file.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return closeStops;
-    }*/
-
     public ArrayList<ArrayList<NearbyStopsInfo>> getStopsByLocationList(Location loc, DataMaps<Stops> stopsDataMap){
 
         nearbyStopsList = new SurroundingStopsList(feedMessage);
-        //nearbyStopsList.getStopsByLocationList(loc, stopsDataMap);
         ArrayList<ArrayList<NearbyStopsInfo>> nsiList = nearbyStopsList.getStopsByLocationList(loc, stopsDataMap);
 
         File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);

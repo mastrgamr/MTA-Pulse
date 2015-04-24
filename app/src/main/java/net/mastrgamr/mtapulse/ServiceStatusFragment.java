@@ -2,7 +2,6 @@ package net.mastrgamr.mtapulse;
 
 import android.app.Activity;
 import android.app.Fragment;
-import android.app.FragmentManager;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -22,12 +21,17 @@ import net.mastrgamr.mtapulse.tools.MtaFeeds;
 import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
 
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.net.URLConnection;
 
 /**
  * Project: MTA Pulse
@@ -134,12 +138,15 @@ public class ServiceStatusFragment extends Fragment implements SwipeRefreshLayou
         @Override
         protected Void doInBackground(Void... params) {
 
+            File file = new File(getActivity().getFilesDir(), "ServceStatus");
+
             Serializer serializer = new Persister();
+
             try {
                 serviceStatus = serializer.read(ServiceStatus.class, url.openStream());
                 statusListAdapter = new StatusListAdapter(rootView.getContext(), serviceStatus);
             } catch (Exception e) {
-                e.printStackTrace();
+                Log.e(LOG_TAG, "Unable to open URL for ServiceStatus.");
             }
 
             return null;

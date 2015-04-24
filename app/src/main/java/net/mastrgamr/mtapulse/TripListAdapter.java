@@ -15,6 +15,7 @@ import com.google.transit.realtime.GtfsRealtime;
 import net.mastrgamr.mtapulse.gtfs_realtime.NearbyStopsInfo;
 import net.mastrgamr.mtapulse.gtfs_realtime.RTRoutes;
 import net.mastrgamr.mtapulse.gtfs_realtime.RtGtfsParser;
+import net.mastrgamr.mtapulse.gtfs_realtime.StopInfo;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -135,9 +136,9 @@ public class TripListAdapter extends BaseAdapter {
         for(int i = 0; i < nearbyStopRoutes.size(); i++){
             RTRoutes rtRoute = nearbyStopRoutes.get(i);
             ArrayList<Long> stopTimes = rtRoute.stopTimes;
-            for(long stopTime: stopTimes){
+            for(Long stopTime: stopTimes){
                 time = stopTime;
-                diff = (time * 1000) - new Date().getTime();
+                diff = (time * 1000) - System.currentTimeMillis();
                 if(diff >= 0) //if positive break out loop and set up the text
                     break;
             }
@@ -149,7 +150,7 @@ public class TripListAdapter extends BaseAdapter {
         //long diff = stu.getDeparture().getTime() * 1000) - new Date().getTime();
         //long time = tripMap.get("501N").get("5").get(0).getDeparture().getTime();
         //long diff = (time * 1000) - new Date().getTime();
-        Log.d(LOG_TAG, (time * 1000) +" - "+ new Date().getTime());
+        Log.d(LOG_TAG, (time * 1000) +" - "+ System.currentTimeMillis());
         if(diff < 0){
             tgih.prevText.setText(Math.abs(diff/60000) + " mins ago");
         } else {

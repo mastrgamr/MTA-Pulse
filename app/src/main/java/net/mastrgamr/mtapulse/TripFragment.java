@@ -27,6 +27,7 @@ import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.transit.realtime.GtfsRealtime;
 
 import net.mastrgamr.mtapulse.gtfs_realtime.RtGtfsParser;
 import net.mastrgamr.mtapulse.gtfs_static.Routes;
