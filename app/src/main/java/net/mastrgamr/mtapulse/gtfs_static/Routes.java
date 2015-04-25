@@ -16,6 +16,7 @@ public class Routes implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private String routeId;
+    private String routeShortName;
     private String routeLongName;
     private String routeDesc;
     private String routeUrl;
@@ -24,8 +25,9 @@ public class Routes implements Serializable {
 
     public Routes() { }
 
-    public Routes(String routeId, String routeLongName, String routeDesc, String routeUrl, String routeColor, String routeTextColor){
+    public Routes(String routeId, String routeShortName, String routeLongName, String routeDesc, String routeUrl, String routeColor, String routeTextColor){
         this.routeId = routeId;
+        this.routeShortName = routeShortName;
         this.routeLongName = routeLongName;
         this.routeDesc = routeDesc;
         this.routeUrl = routeUrl;
@@ -33,8 +35,9 @@ public class Routes implements Serializable {
         this.routeTextColor = routeTextColor;
     }
 
-    public Routes(String routeId, String routeLongName, String routeDesc, String routeUrl, String routeColor){
+    public Routes(String routeId, String routeShortName, String routeLongName, String routeDesc, String routeUrl, String routeColor){
         this.routeId = routeId;
+        this.routeShortName = routeShortName;
         this.routeLongName = routeLongName;
         this.routeDesc = routeDesc;
         this.routeUrl = routeUrl;
@@ -45,12 +48,14 @@ public class Routes implements Serializable {
     public String toString() {
         if(routeTextColor == null){
             return "Route ID: " + routeId +
+                    ", Short Name: " + routeShortName +
                     ", Long Name: " + routeLongName +
                     ", Description: " + routeDesc +
                     ", Url: " + routeUrl +
                     ", Color: " + routeColor;
         } else {
             return "Route ID: " + routeId +
+                    ", Short Name: " + routeShortName +
                     ", Long Name: " + routeLongName +
                     ", Description: " + routeDesc +
                     ", Url: " + routeUrl +

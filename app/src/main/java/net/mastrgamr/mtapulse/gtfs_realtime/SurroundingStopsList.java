@@ -1,8 +1,10 @@
 package net.mastrgamr.mtapulse.gtfs_realtime;
 
 import android.location.Location;
+import android.os.Environment;
 import android.util.Log;
 
+import com.bluelinelabs.logansquare.LoganSquare;
 import com.bluelinelabs.logansquare.annotation.JsonField;
 import com.bluelinelabs.logansquare.annotation.JsonIgnore;
 import com.bluelinelabs.logansquare.annotation.JsonObject;
@@ -13,6 +15,10 @@ import net.mastrgamr.mtapulse.tools.ArrayListSearcher;
 import net.mastrgamr.mtapulse.tools.DataMaps;
 import net.mastrgamr.mtapulse.tools.PointD;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -20,11 +26,12 @@ import java.util.HashMap;
 /**
  * Project: MTA Pulse
  * Created: Stuart Smith
- * Date: 4/3/2015.
+ * Date: 4/3/2015
+ * TODO: Find efficient way of returning this so it's easy to digest for LoganSquare.
  */
 
 @JsonObject
-public class SurroundingStopsList extends ArrayList<ArrayList<NearbyStopsInfo>> {
+public class SurroundingStopsList {
 
     @JsonIgnore
     public ArrayList<NearbyStopsInfo> nearbyNorth;
@@ -86,55 +93,50 @@ public class SurroundingStopsList extends ArrayList<ArrayList<NearbyStopsInfo>> 
                             {
                                 boolean addNewNorth = false;
                                 boolean addNewRoute = false;
-                                int nearbyInd = 0;
+                                int nearbyInd;
 
-                                //System.out.println("NORTHBOUND");
-                                //for(NearbyStopsInfo nsi : nearbyNorth)
-                                //{
-                                    nearbyInd = search.containsStop(nearbyNorth, stu.getStopId());
-                                    Log.d("surrstopslist", nearbyInd + " index of stopN - " + stu.getStopId());
+                                nearbyInd = search.containsStop(nearbyNorth, stu.getStopId());
+                                //Log.d("surrstopslist", nearbyInd + " index of stopN - " + stu.getStopId());
+                                //TODO:Change to if nsi.stopID == stu.stopID, w/o adding multiple new routes
+                                if (nearbyInd < 0) //-1, does not contain stop
+                                {
+                                    addNewNorth = true;
+                                    //System.out.println("nearbyStop not in route");
+                                    nearby = new NearbyStopsInfo();
+                                    nearby.stopId = stu.getStopId();
+                                    nearby.stopName = stopsDataMap.get(stopId).getStopName();
+
+                                    RTRoutes routes = new RTRoutes();
+                                    routes.routeId = entity.getTripUpdate().getTrip().getRouteId();
+                                    routes.stopTimes = new ArrayList<>();
+                                    //Create inner class with actual stop names and stop times field
+                                    routes.stopTimes.add(stu.getArrival().getTime());
+                                    nearby.trains = new ArrayList<>();
+                                    nearby.trains.add(routes);
+                                }
+                                else //contain the stop
+                                {
+                                    /**
+                                     * If a stop is contained within this NearbyStop, it means there's a route inside.
+                                     * A Route has StopTimes in it, check if the route is listed within the stop:
+                                     * -if it is, add a stop time to the route
+                                     * -if not, create a new Route, StopTime within it, and add it to the NearbyStop index.
+                                     */
+                                    int routeInd = search.containsRoute(nearbyNorth.get(nearbyInd).trains, entity.getTripUpdate().getTrip().getRouteId());
+                                    //Log.d("surrstopslist", nearbyInd + " index of stopN");
                                     //TODO:Change to if nsi.stopID == stu.stopID, w/o adding multiple new routes
-                                    if (nearbyInd < 0) //-1, does not contain stop
+                                    if (routeInd < 0) //-1, does not contain route
                                     {
-                                        addNewNorth = true;
-                                        //System.out.println("nearbyStop not in route");
-                                        nearby = new NearbyStopsInfo();
-                                        nearby.stopId = stu.getStopId();
-
-                                        RTRoutes routes = new RTRoutes();
-                                        routes.routeId = entity.getTripUpdate().getTrip().getRouteId();
-                                        routes.stopTimes = new ArrayList<>();
-                                        //Create inner class with actual stop names and stop times field
-                                        routes.stopTimes.add(stu.getArrival().getTime());
-                                        nearby.trains = new ArrayList<>();
-                                        nearby.trains.add(routes);
+                                        addNewRoute = true;
+                                        route = new RTRoutes();
+                                        route.routeId = entity.getTripUpdate().getTrip().getRouteId();
+                                        route.stopTimes = new ArrayList<>();
+                                        route.stopTimes.add(stu.getArrival().getTime());
+                                    } else {
+                                        nearbyNorth.get(nearbyInd).trains.get(routeInd).stopTimes.add(stu.getArrival().getTime());
+                                        Collections.sort(nearbyNorth.get(nearbyInd).trains.get(routeInd).stopTimes);
                                     }
-                                    else //contain the stop
-                                    {
-                                        /**
-                                         * If a stop is contained within this NearbyStop, it means there's a route inside.
-                                         * A Route has StopTimes in it, check if the route is listed within the stop:
-                                         * -if it is, add a stop time to the route
-                                         * -if not, create a new Route, StopTime within it, and add it to the NearbyStop index.
-                                         */
-                                        //for(RTRoutes routes : nearbyNorth.get(nearbyInd).trains){
-                                            int routeInd = search.containsRoute(nearbyNorth.get(nearbyInd).trains, entity.getTripUpdate().getTrip().getRouteId());
-                                            //Log.d("surrstopslist", nearbyInd + " index of stopN");
-                                            //TODO:Change to if nsi.stopID == stu.stopID, w/o adding multiple new routes
-                                            if (routeInd < 0) //-1, does not contain route
-                                            {
-                                                addNewRoute = true;
-                                                route = new RTRoutes();
-                                                route.routeId = entity.getTripUpdate().getTrip().getRouteId();
-                                                route.stopTimes = new ArrayList<>();
-                                                route.stopTimes.add(stu.getArrival().getTime());
-                                            } else {
-                                                nearbyNorth.get(nearbyInd).trains.get(routeInd).stopTimes.add(stu.getArrival().getTime());
-                                                Collections.sort(nearbyNorth.get(nearbyInd).trains.get(routeInd).stopTimes);
-                                            }
-                                        //}
-                                    }
-                                //}
+                                }
                                 if(addNewNorth)
                                     nearbyNorth.add(nearby);
                                 if(addNewRoute) {
@@ -145,57 +147,51 @@ public class SurroundingStopsList extends ArrayList<ArrayList<NearbyStopsInfo>> 
                             {
                                 boolean addNewSouth = false;
                                 boolean addNewRoute = false;
-                                int nearbyInd = 0;
-                                //System.out.println("SOUTHBOUND");
-                                //for(NearbyStopsInfo nsi : nearbySouth)
-                                //{
-                                    nearbyInd = search.containsStop(nearbySouth, stu.getStopId());
-                                    Log.d("surrstopslist", nearbyInd + " index of stopS - " + stu.getStopId());
-                                    if (nearbyInd < 0) //-1, stop not in list
-                                    {
-                                        addNewSouth = true;
-                                        //System.out.println("nearbyStop not in route");
-                                        nearby = new NearbyStopsInfo();
-                                        nearby.stopId = stu.getStopId();
-                                        //downList = new ArrayList<>();
-                                        RTRoutes routes = new RTRoutes();
-                                        routes.stopTimes = new ArrayList<>();
-                                        routes.routeId = entity.getTripUpdate().getTrip().getRouteId();
-                                        //Create inner class with actual stop names and stop times field
-                                        routes.stopTimes.add(stu.getArrival().getTime());
-                                        nearby.trains = new ArrayList<>();
-                                        nearby.trains.add(routes);
-                                    }
-                                    else {
-                                        /**
-                                         * If a stop is contained within this NearbyStop, it means there's a route inside.
-                                         * A Route has StopTimes in it, check if the route is listed within the stop:
-                                         * -if it is, add a stop time to the route
-                                         * -if not, create a new Route, StopTime within it, and add it to the NearbyStop index.
-                                         */
-                                        //for(RTRoutes routes : nsi.trains){
-                                            int routeInd = search.containsRoute(nearbySouth.get(nearbyInd).trains, entity.getTripUpdate().getTrip().getRouteId());
-                                            //Log.d("surrstopslist", nearbyInd + " index of stopN");
-                                            //TODO:Change to if nsi.stopID == stu.stopID, w/o adding multiple new routes
-                                            if (routeInd < 0) //-1, does not contain route
-                                            {
-                                                addNewRoute = true;
-                                                route = new RTRoutes();
-                                                route.routeId = entity.getTripUpdate().getTrip().getRouteId();
-                                                route.stopTimes = new ArrayList<>();
+                                int nearbyInd;
+                                nearbyInd = search.containsStop(nearbySouth, stu.getStopId());
+                                //Log.d("surrstopslist", nearbyInd + " index of stopS - " + stu.getStopId());
+                                if (nearbyInd < 0) //-1, stop not in list
+                                {
+                                    addNewSouth = true;
+                                    //System.out.println("nearbyStop not in route");
+                                    nearby = new NearbyStopsInfo();
+                                    nearby.stopId = stu.getStopId();
+                                    nearby.stopName = stopsDataMap.get(stopId).getStopName();
 
-                                                route.stopTimes.add(stu.getArrival().getTime());
-                                            } else {
-                                                nearbySouth.get(nearbyInd).trains.get(routeInd).stopTimes.add(stu.getArrival().getTime());
-                                                Collections.sort(nearbySouth.get(nearbyInd).trains.get(routeInd).stopTimes);
-                                            }
-                                        //}
+                                    RTRoutes routes = new RTRoutes();
+                                    routes.stopTimes = new ArrayList<>();
+                                    routes.routeId = entity.getTripUpdate().getTrip().getRouteId();
+                                    //Create inner class with actual stop names and stop times field
+                                    routes.stopTimes.add(stu.getArrival().getTime());
+                                    nearby.trains = new ArrayList<>();
+                                    nearby.trains.add(routes);
+                                }
+                                else {
+                                    /**
+                                     * If a stop is contained within this NearbyStop, it means there's a route inside.
+                                     * A Route has StopTimes in it, check if the route is listed within the stop:
+                                     * -if it is, add a stop time to the route
+                                     * -if not, create a new Route, StopTime within it, and add it to the NearbyStop index.
+                                     */
+                                    int routeInd = search.containsRoute(nearbySouth.get(nearbyInd).trains, entity.getTripUpdate().getTrip().getRouteId());
+                                    //Log.d("surrstopslist", nearbyInd + " index of stopN");
+                                    //TODO:Change to if nsi.stopID == stu.stopID, w/o adding multiple new routes
+                                    if (routeInd < 0) //-1, does not contain route
+                                    {
+                                        addNewRoute = true;
+                                        route = new RTRoutes();
+                                        route.routeId = entity.getTripUpdate().getTrip().getRouteId();
+                                        route.stopTimes = new ArrayList<>();
+
+                                        route.stopTimes.add(stu.getArrival().getTime());
+                                    } else {
+                                        nearbySouth.get(nearbyInd).trains.get(routeInd).stopTimes.add(stu.getArrival().getTime());
+                                        Collections.sort(nearbySouth.get(nearbyInd).trains.get(routeInd).stopTimes);
                                     }
-                                //}
+                                }
                                 if(addNewSouth)
                                     nearbySouth.add(nearby);
                                 if(addNewRoute) {
-                                    //nearbySouth.get(nearbyInd).trains = new ArrayList<>();
                                     nearbySouth.get(nearbyInd).trains.add(route);
                                 }
                             }
@@ -209,8 +205,24 @@ public class SurroundingStopsList extends ArrayList<ArrayList<NearbyStopsInfo>> 
         nearbySouth.remove(0);
         nearbyStops.add(nearbyNorth);
         nearbyStops.add(nearbySouth);
-        this.add(nearbyNorth);
-        this.add(nearbySouth);
-        return this;
+        cacheFile(this);
+        return nearbyStops;
+    }
+
+    private void cacheFile(SurroundingStopsList stopsList){
+        File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+        FileOutputStream file;
+        try {
+            file = new FileOutputStream(new File(path, "nearbyStopsList.json"));
+            LoganSquare.serialize(stopsList, file);
+            System.out.println("SERIALIZED JSON!!");
+            String json = LoganSquare.serialize(stopsList);
+            System.out.println(json);
+            file.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

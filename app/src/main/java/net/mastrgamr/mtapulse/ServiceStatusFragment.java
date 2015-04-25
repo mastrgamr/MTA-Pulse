@@ -16,6 +16,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import net.mastrgamr.mtapulse.live_service.ServiceStatus;
+import net.mastrgamr.mtapulse.tools.HttpRequest;
 import net.mastrgamr.mtapulse.tools.MtaFeeds;
 
 import org.simpleframework.xml.Serializer;
@@ -32,6 +33,7 @@ import java.io.ObjectOutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Date;
 
 /**
  * Project: MTA Pulse
@@ -42,7 +44,6 @@ public class ServiceStatusFragment extends Fragment implements SwipeRefreshLayou
 
     private final String LOG_TAG = getTag();
     private static final String ARG_SECTION_NUMBER = "section_number";
-    private URL url;
 
     private View rootView;
     private ListView listView;
@@ -50,6 +51,7 @@ public class ServiceStatusFragment extends Fragment implements SwipeRefreshLayou
 
     private ServiceStatus serviceStatus;
     private StatusListAdapter statusListAdapter;
+    private boolean refreshStatus = false;
 
     private PopulateList populateList;
 
@@ -65,20 +67,14 @@ public class ServiceStatusFragment extends Fragment implements SwipeRefreshLayou
         return fragment;
     }
 
-    public ServiceStatusFragment() {
-        try {
-            url = new URL(MtaFeeds.serviceStatus);
-        } catch (MalformedURLException e) {
-            Log.e(LOG_TAG, e.getMessage());
-        }
-    }
+    public ServiceStatusFragment() { }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         populateList = new PopulateList();
-        populateList.execute();
+        populateList.execute(MtaFeeds.serviceStatus);
     }
 
     @Override
@@ -124,11 +120,17 @@ public class ServiceStatusFragment extends Fragment implements SwipeRefreshLayou
 
     @Override
     public void onRefresh() {
-        Toast.makeText(rootView.getContext(), "Refresh not supported yet!", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(rootView.getContext(), "Refresh not supported yet!", Toast.LENGTH_SHORT).show();
+        refreshLayout.setRefreshing(true);
+        if(populateList.getStatus() != AsyncTask.Status.RUNNING) {
+            refreshStatus = true;
+            populateList = new PopulateList();
+            populateList.execute(MtaFeeds.serviceStatus);
+        }
         refreshLayout.setRefreshing(false);
     }
 
-    private class PopulateList extends AsyncTask<Void, Void, Void> {
+    private class PopulateList extends AsyncTask<String, Void, File> {
 
         @Override
         protected void onPreExecute() {
@@ -136,25 +138,69 @@ public class ServiceStatusFragment extends Fragment implements SwipeRefreshLayou
         }
 
         @Override
-        protected Void doInBackground(Void... params) {
-
-            File file = new File(getActivity().getFilesDir(), "ServceStatus");
-
+        protected File doInBackground(String... urls) {
+            URL url;
             Serializer serializer = new Persister();
 
-            try {
-                serviceStatus = serializer.read(ServiceStatus.class, url.openStream());
-                statusListAdapter = new StatusListAdapter(rootView.getContext(), serviceStatus);
-            } catch (Exception e) {
-                Log.e(LOG_TAG, "Unable to open URL for ServiceStatus.");
+            /**
+             * Check if file exists
+             */
+            Log.d(LOG_TAG, "checking if file exists");
+            File[] files = getActivity().getCacheDir().listFiles();
+            File preCheck = null;
+            for(File file : files){
+                if(file.getName().startsWith("serviceStat")) {
+                    preCheck = file;
+                    Log.d(LOG_TAG, "file exists");
+                    break;
+                }
             }
 
+            /**
+             * If the file exists and is not more than 5 minutes old (or file exists), keep it.
+             * Else generate a new one.
+             */
+            try {
+                if(preCheck != null)
+                    serviceStatus = serializer.read(ServiceStatus.class, preCheck);
+
+                if(serviceStatus == null || (System.currentTimeMillis() - preCheck.lastModified()) >= 300000 || refreshStatus){
+                    Log.d(LOG_TAG, "5 mins older, or file dont exist, or refresh prompted. Generating new file");
+                    try {
+                        if(preCheck != null)
+                            preCheck.delete();
+
+                        url = new URL(urls[0]);
+                        serviceStatus = serializer.read(ServiceStatus.class, url.openStream());
+                        statusListAdapter = new StatusListAdapter(rootView.getContext(), serviceStatus);
+
+                        HttpRequest request =  HttpRequest.get(url);
+                        File file = null;
+                        if (request.ok()) {
+                            file = File.createTempFile("serviceStat", ".xml", getActivity().getCacheDir());
+                            file.setLastModified(System.currentTimeMillis());
+                            request.receive(file);
+                        }
+                        return file;
+                    } catch (HttpRequest.HttpRequestException exception) {
+                        return null;
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    } catch (Exception e) {
+                        Log.e(LOG_TAG, "Unable to open URL for ServiceStatus.");
+                    }
+                } else {
+                    statusListAdapter = new StatusListAdapter(rootView.getContext(), serviceStatus);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             return null;
         }
 
         @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
+        protected void onPostExecute(File aFile) {
+            super.onPostExecute(aFile);
             listView.setAdapter(statusListAdapter);
         }
     }

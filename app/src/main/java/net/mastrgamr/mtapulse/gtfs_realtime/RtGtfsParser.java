@@ -203,24 +203,7 @@ public class RtGtfsParser {
     public ArrayList<ArrayList<NearbyStopsInfo>> getStopsByLocationList(Location loc, DataMaps<Stops> stopsDataMap){
 
         nearbyStopsList = new SurroundingStopsList(feedMessage);
-        ArrayList<ArrayList<NearbyStopsInfo>> nsiList = nearbyStopsList.getStopsByLocationList(loc, stopsDataMap);
-
-        File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-        FileOutputStream file;
-        try {
-            file = new FileOutputStream(new File(path, "nearbyStopsList.json"));
-            LoganSquare.serialize(nearbyStopsList.getStopsByLocationList(loc, stopsDataMap), file);
-            System.out.println("SERIALIZED JSON!!");
-            String json = LoganSquare.serialize(nearbyStopsList.getStopsByLocationList(loc, stopsDataMap));
-            System.out.println(json);
-            file.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return nsiList;
+        return nearbyStopsList.getStopsByLocationList(loc, stopsDataMap);
     }
 
     /**

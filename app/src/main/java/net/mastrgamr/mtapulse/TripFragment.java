@@ -58,6 +58,8 @@ public class TripFragment extends Fragment implements
 
     private GoogleMap gMap;
     private boolean track = true;
+    private boolean initialLoad = false;
+    private Location loadedLoc;
     private MapView mapView;
     private MapFragment mapFragment;
     private HeaderGridView subwayList;
@@ -67,7 +69,6 @@ public class TripFragment extends Fragment implements
     private Stops stops;
 
     private ArrayList<Routes> routesList;
-    private ArrayList<String> routeIds;
     private ArrayList<Shapes> shapesList;
     private ArrayList<Stops> stopsList;
 
@@ -76,6 +77,7 @@ public class TripFragment extends Fragment implements
 
     private DataGenerator dataGen;
     private DataMaps<Stops> stopsDataMap;
+    private DataMaps<Routes> routesDataMap;
 
     PolylineOptions shapesOptions = new PolylineOptions();
 
@@ -86,17 +88,17 @@ public class TripFragment extends Fragment implements
         super.onCreate(savedInstanceState);
         MapsInitializer.initialize(getActivity());
 
-        routesList = new ArrayList<>();
-        routeIds = new ArrayList<>();
+        //routesList = new ArrayList<>();
         shapesList = new ArrayList<>();
-        stopsList = new ArrayList<>();
+        //stopsList = new ArrayList<>();
 
         gtfsParser = new RtGtfsParser(getActivity());
 
         stopsDataMap = new DataMaps<>(getActivity());
+        routesDataMap = new DataMaps<>(getActivity());
 
-        dataGen = new DataGenerator();
-        dataGen.execute();
+        //dataGen = new DataGenerator();
+        //dataGen.execute();
     }
 
     @Override
@@ -179,10 +181,16 @@ public class TripFragment extends Fragment implements
                     location.getLongitude());
             gMap.animateCamera(CameraUpdateFactory.newLatLngZoom(loc, 15f));
 
+            //if(initialLoad) {
+                loadedLoc = location;
+                dataGen = new DataGenerator();
+                dataGen.execute();
+            //}
+
             //TODO: Set up efficient way to track location
             //tripListAdapter = new TripListAdapter(getActivity(), gtfsParser.getStopsByLocation(location, stopsDataMap));
-            tripListAdapter = new TripListAdapter(getActivity(), gtfsParser.getStopsByLocationList(location, stopsDataMap));
-            subwayList.setAdapter(tripListAdapter);
+            //tripListAdapter = new TripListAdapter(getActivity(), gtfsParser.getStopsByLocationList(location, stopsDataMap));
+            //subwayList.setAdapter(tripListAdapter);
 
             /*Location mylocation = new Location("View Center"); //DEBUG STUFF!!
             mylocation.setLatitude(40.800148);
@@ -224,13 +232,14 @@ public class TripFragment extends Fragment implements
                     if(csvParser.getCurrentLineNumber() == CSV_HEADER)
                         continue; //Skip header in gtfs csv files
                     if(record.size() < 9) {
-                        routes = new Routes(record.get(0), record.get(3), record.get(4), record.get(6), record.get(7));
+                        routes = new Routes(record.get(0), record.get(2), record.get(3), record.get(4), record.get(6), record.get(7));
                     } else {
-                        routes = new Routes(record.get(0), record.get(3), record.get(4), record.get(6), record.get(7), record.get(8));
+                        routes = new Routes(record.get(0), record.get(2), record.get(3), record.get(4), record.get(6), record.get(7), record.get(8));
                     }
 
-                    routesList.add(routes);
-                    routeIds.add(routes.getRouteId());
+                    //routesList.add(routes);
+
+                    routesDataMap.put(routes.getRouteId(), routes);
                 }
 
                 input = getActivity().getResources().openRawResource(R.raw.shapesex);
@@ -257,15 +266,17 @@ public class TripFragment extends Fragment implements
                         continue; //Skip header in gtfs csv files
                     stops = new Stops(record.get("stop_id"), record.get("stop_name"), record.get("stop_lat"), record.get("stop_lon"));
 
-                    stopsList.add(stops);
+                    //stopsList.add(stops);
 
-                    stopsDataMap.put(stops.getStopId(), new Stops(record.get("stop_name"), record.get("stop_lat"), record.get("stop_lon")));
+                    stopsDataMap.put(stops.getStopId(), stops);
                 }
 
                 Log.d(LOG_TAG, "Finished Generating HashMaps");
             } catch (IOException e) {
                 Log.e(LOG_TAG, e.getMessage());
             }
+
+            tripListAdapter = new TripListAdapter(getActivity(), gtfsParser.getStopsByLocationList(loadedLoc, stopsDataMap));
             return null;
         }
 
@@ -273,8 +284,12 @@ public class TripFragment extends Fragment implements
         protected void onPostExecute(Void aVoid) {
             Log.d(LOG_TAG, "Serializing HashMaps");
             stopsDataMap.serialize(Stops.class);
+            routesDataMap.serialize(Routes.class);
             Log.d(LOG_TAG, "Finished Serializing HashMaps");
 
+            initialLoad = true;
+
+            subwayList.setAdapter(tripListAdapter);
             //gtfsParser.getTrainsForStop("501S");
         }
     }
