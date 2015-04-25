@@ -5,6 +5,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 public class TripActivity extends ActionBarActivity
 {
@@ -45,6 +46,7 @@ public class TripActivity extends ActionBarActivity
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings)
         {
+            Toast.makeText(this, "No settings yet!", Toast.LENGTH_SHORT).show();
             return true;
         }
 

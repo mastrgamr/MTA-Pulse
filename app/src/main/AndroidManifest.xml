@@ -57,6 +57,14 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="net.mastrgamr.mtapulse.MainActivity" />
         </activity>
+        <activity
+            android:name=".LicenseActivity"
+            android:label="@string/title_activity_license"
+            android:parentActivityName=".AboutActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="net.mastrgamr.mtapulse.AboutActivity" />
+        </activity>
     </application>
 
 </manifest>

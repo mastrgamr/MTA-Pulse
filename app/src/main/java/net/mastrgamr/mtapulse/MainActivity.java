@@ -17,6 +17,7 @@ public class MainActivity extends ActionBarActivity implements
 
     private final String LOG_TAG = getClass().getSimpleName();
     private static final String STATUS_TEXT = "statusText";
+    private int backPresses = 0;
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -52,16 +53,18 @@ public class MainActivity extends ActionBarActivity implements
         switch (position)
         {
             case 0:
+                backPresses = 0;
                 fragmentManager.beginTransaction()
                         .replace(R.id.container, new ServiceStatusFragment().newInstance(position + 1))
                         .commit();
                 break;
             case 1:
+                backPresses = 0;
                 Intent i = new Intent(this, TripActivity.class);
                 startActivity(i);
                 break;
             default:
-                Log.e(LOG_TAG, "Something fucked up with these fragments");
+                Log.e(LOG_TAG, "Something fucked up with these fragments!");
         }
     }
 
@@ -109,6 +112,7 @@ public class MainActivity extends ActionBarActivity implements
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            Toast.makeText(this, "No settings yet!", Toast.LENGTH_SHORT).show();
             return true;
         }
         if (id == R.id.action_about) {
@@ -123,9 +127,19 @@ public class MainActivity extends ActionBarActivity implements
     public void onBackPressed() {
         fragmentManager.popBackStack();
 
-        if(fragmentManager.getBackStackEntryCount() == 0){
-            Toast.makeText(this, "Are you sure you want to exit?", Toast.LENGTH_SHORT).show();
-            //super.onBackPressed();
+        switch (backPresses) {
+            case 0:
+            case 1:
+                if (fragmentManager.getBackStackEntryCount() == 0) {
+                    Toast.makeText(this, "Are you sure you want to exit?", Toast.LENGTH_SHORT).show();
+                    backPresses++;
+                }
+                break;
+            case 2:
+                super.onBackPressed();
+                break;
+            default:
+                break;
         }
     }
 

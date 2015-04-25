@@ -42,7 +42,7 @@ import java.util.Date;
  */
 public class ServiceStatusFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
 
-    private final String LOG_TAG = getTag();
+    private final String LOG_TAG = getClass().getSimpleName();
     private static final String ARG_SECTION_NUMBER = "section_number";
 
     private View rootView;
@@ -164,7 +164,8 @@ public class ServiceStatusFragment extends Fragment implements SwipeRefreshLayou
                 if(preCheck != null)
                     serviceStatus = serializer.read(ServiceStatus.class, preCheck);
 
-                if(serviceStatus == null || (System.currentTimeMillis() - preCheck.lastModified()) >= 300000 || refreshStatus){
+                //TODO:Potential crash! Expectation is the first bool == null
+                if(serviceStatus == null || refreshStatus || (System.currentTimeMillis() - preCheck.lastModified()) >= 300000){
                     Log.d(LOG_TAG, "5 mins older, or file dont exist, or refresh prompted. Generating new file");
                     try {
                         if(preCheck != null)
@@ -181,6 +182,8 @@ public class ServiceStatusFragment extends Fragment implements SwipeRefreshLayou
                             file.setLastModified(System.currentTimeMillis());
                             request.receive(file);
                         }
+
+                        refreshStatus = false;
                         return file;
                     } catch (HttpRequest.HttpRequestException exception) {
                         return null;
