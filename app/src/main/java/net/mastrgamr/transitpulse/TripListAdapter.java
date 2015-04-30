@@ -12,9 +12,12 @@ import com.facebook.shimmer.ShimmerFrameLayout;
 
 import net.mastrgamr.transitpulse.gtfs_realtime.NearbyStopsInfo;
 import net.mastrgamr.transitpulse.gtfs_realtime.RTRoutes;
+import net.mastrgamr.transitpulse.gtfs_static.Routes;
+import net.mastrgamr.transitpulse.tools.NearbyStopsProto;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.TreeSet;
 
 /**
@@ -33,7 +36,9 @@ public class TripListAdapter extends BaseAdapter {
     private Context c;
     //private ArrayList<ArrayList<NearbyStopsInfo>> nearbyStops;
     private ArrayList<NearbyStopsInfo> nearbyStops1;
+    private NearbyStopsProto.UpDownStops nearbyStops2;
     private ArrayList<RTRoutes> nearbyStopRoutes;
+    private List<NearbyStopsProto.Routes> nearbyStopRoutes1;
     LinkedList<NearbyStopsInfo> nsi;
 
     private TreeSet seperators = new TreeSet();
@@ -52,6 +57,16 @@ public class TripListAdapter extends BaseAdapter {
 
         for (int i = 0; i < nearbyStops.size(); i++) {
             seperators.add(nearbyStops.get(i).size() - 1);
+        }
+    }
+
+    public TripListAdapter(Context context, NearbyStopsProto.NearbyStopsFeed nearbyStops) {
+        c = context;
+        this.nearbyStops2 = nearbyStops.getUpdown(upDownFlip);
+        System.out.println(nearbyStops.getUpdownCount() + " size passed in Adapter");
+
+        for (int i = 0; i < nearbyStops.getUpdownList().size(); i++) {
+            seperators.add(nearbyStops.getUpdown(i).getNearbyList().size() - 1);
         }
     }
 
@@ -96,14 +111,14 @@ public class TripListAdapter extends BaseAdapter {
     @Override
     public int getCount() {
         if(stationSelected)
-            return nearbyStops1.get(upDownFlip).trains.size();
-        return nearbyStops1.size();
+            return nearbyStops2.getNearby(upDownFlip).getRoutesList().size();
+        return nearbyStops2.getNearbyList().size();
     }
 
     //Ignore for now
     @Override
     public Object getItem(int position) {
-        return nearbyStops1.get(upDownFlip);
+        return nearbyStops2.getNearby(upDownFlip);
     }
 
     @Override
@@ -177,10 +192,10 @@ public class TripListAdapter extends BaseAdapter {
             long time = 0;
             long diff = 0;
             long diffNext = 0;
-            nearbyStopRoutes = nearbyStops1.get(position).trains;
-            for (int i = 0; i < nearbyStopRoutes.size(); i++) {
-                RTRoutes rtRoute = nearbyStopRoutes.get(i);
-                ArrayList<Long> stopTimes = rtRoute.stopTimes;
+            nearbyStopRoutes1 = nearbyStops2.getNearby(position).getRoutesList();
+            for (int i = 0; i < nearbyStopRoutes1.size(); i++) {
+                NearbyStopsProto.Routes rtRoute = nearbyStopRoutes1.get(i);
+                List<Long> stopTimes = rtRoute.getStopTimesList();
                 for (Long stopTime : stopTimes) {
                     time = stopTime;
                     diff = (time * 1000) - System.currentTimeMillis();
@@ -189,7 +204,8 @@ public class TripListAdapter extends BaseAdapter {
                 }
             }
 
-            tgih.routeText.setText(nearbyStops1.get(upDownFlip).trains.get(position).routeId);
+            //tgih.routeText.setText(nearbyStops1.get(upDownFlip).trains.get(position).routeId);
+            tgih.routeText.setText(nearbyStops2.getNearby(position).getRoutes(position).getRouteId());
 
             Log.d(LOG_TAG, (time * 1000) + " - " + System.currentTimeMillis());
             if (diff < 0) {
@@ -205,11 +221,11 @@ public class TripListAdapter extends BaseAdapter {
                 tgih.liveTimeText.setText(diff / 60000 + " mins");
             }
         } else {
-            tgsh.stationName.setText(nearbyStops1.get(position).stopName);
+            tgsh.stationName.setText(nearbyStops2.getNearby(position).getStopName());
 
             StringBuilder sb = new StringBuilder();
-            for(RTRoutes routes : nearbyStops1.get(position).trains){
-                    sb.append(routes.routeId);
+            for(NearbyStopsProto.Routes routes : nearbyStops2.getNearby(position).getRoutesList()){
+                    sb.append(routes.getRouteId());
                     sb.append(" ");
             }
             tgsh.routes.setText(sb);

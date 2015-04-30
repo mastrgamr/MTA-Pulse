@@ -11,7 +11,7 @@ import com.bluelinelabs.logansquare.annotation.JsonObject;
 import com.google.transit.realtime.GtfsRealtime;
 
 import net.mastrgamr.transitpulse.gtfs_static.Stops;
-import net.mastrgamr.transitpulse.tools.ArrayListSearcher;
+import net.mastrgamr.transitpulse.tools.ArrayListSearcher2;
 import net.mastrgamr.transitpulse.tools.DataMaps;
 import net.mastrgamr.transitpulse.tools.PointD;
 
@@ -63,7 +63,7 @@ public class SurroundingStopsList {
 
     public ArrayList<ArrayList<NearbyStopsInfo>> getStopsByLocationList(Location loc, DataMaps<Stops> stopsDataMap){
 
-        ArrayListSearcher search = new ArrayListSearcher();
+        ArrayListSearcher2 search = new ArrayListSearcher2();
 
         long before = System.currentTimeMillis();
 

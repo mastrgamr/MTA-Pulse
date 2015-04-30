@@ -223,17 +223,6 @@ public class TripFragment extends Fragment implements
         }
     }
 
-    public void onCameraChange(CameraPosition cameraPosition) {
-        Log.d(LOG_TAG, "View Changed");
-        Location location = new Location("View Center");
-        location.setLatitude(cameraPosition.target.latitude);
-        location.setLongitude(cameraPosition.target.longitude);
-
-        tripListAdapter = new TripListAdapter(getActivity(), gtfsParser.getStopsByLocationList(location, stopsDataMap));
-        subwayList.setAdapter(tripListAdapter);
-        tripListAdapter.notifyDataSetChanged();
-    }
-
     private class DataGenerator extends AsyncTask<Void, Void, Void>{
         ProgressDialog pd;
         @Override
@@ -314,10 +303,12 @@ public class TripFragment extends Fragment implements
                 routesDataMap.serialize(Routes.class);
                 Log.d(LOG_TAG, "Finished Serializing HashMaps");
 
-                tripListAdapter = new TripListAdapter(getActivity(), gtfsParser.getStopsByLocationList(loadedLoc, stopsDataMap));
+                //tripListAdapter = new TripListAdapter(getActivity(), gtfsParser.getStopsByLocationList(loadedLoc, stopsDataMap));
+                tripListAdapter = new TripListAdapter(getActivity(), gtfsParser.getStopsByLocationFeed(loadedLoc, stopsDataMap));
             } else {
                 Log.d(LOG_TAG, "Using cached Datamap for TripAdapter");
-                tripListAdapter = new TripListAdapter(getActivity(), gtfsParser.getStopsByLocationList(loadedLoc, stopsDataMap.getMap(Stops.class)));
+                //tripListAdapter = new TripListAdapter(getActivity(), gtfsParser.getStopsByLocationList(loadedLoc, stopsDataMap.getMap(Stops.class)));
+                tripListAdapter = new TripListAdapter(getActivity(), gtfsParser.getStopsByLocationFeed(loadedLoc, stopsDataMap.getMap(Stops.class)));
             }
 
             Log.d(LOG_TAG, System.currentTimeMillis() - before + " TOTAL TIME TO OUTPUT TRIPADAPTER!!");

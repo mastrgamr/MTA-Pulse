@@ -14,6 +14,7 @@ import net.mastrgamr.transitpulse.gtfs_static.Stops;
 import net.mastrgamr.transitpulse.tools.DataMaps;
 import net.mastrgamr.transitpulse.tools.HttpRequest;
 import net.mastrgamr.transitpulse.tools.MtaFeeds;
+import net.mastrgamr.transitpulse.tools.NearbyStopsProto;
 import net.mastrgamr.transitpulse.tools.NetworkStatics;
 import net.mastrgamr.transitpulse.tools.PointD;
 
@@ -45,6 +46,7 @@ public class RtGtfsParser {
     private Context c;
 
     private EntityFactory factory;
+    private NearbyStopsFactory nearbyStopsFactory;
     private FeedMessage feedMessage;
     private URL url;
 
@@ -185,8 +187,17 @@ public class RtGtfsParser {
 
         //nearbyStopsList = new SurroundingStopsList(feedMessage, c);
         //return nearbyStopsList.getStopsByLocationList(loc, stopsDataMap);
+
         nearbyStopsList = new SurroundingStopsList(feedMessage, c);
         return nearbyStopsList.getCachedFile(loc, stopsDataMap);
+    }
+
+    public NearbyStopsProto.NearbyStopsFeed getStopsByLocationFeed(Location loc, DataMaps<Stops> stopsDataMap){
+
+        //nearbyStopsList = new SurroundingStopsList(feedMessage, c);
+        //return nearbyStopsList.getStopsByLocationList(loc, stopsDataMap);
+
+        return new NearbyStopsFactory(feedMessage).publishNearbyFeed(loc, stopsDataMap);
     }
 
     /**
