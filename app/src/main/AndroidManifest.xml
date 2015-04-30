@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="net.mastrgamr.mtapulse" >
+    package="net.mastrgamr.transitpulse" >
 
     <uses-sdk tools:overrideLibrary="com.facebook.shimmer" />
 
@@ -25,7 +25,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name=".MainActivity"
+            android:name="net.mastrgamr.transitpulse.MainActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -34,11 +34,11 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".TripActivity"
+            android:name="net.mastrgamr.transitpulse.TripActivity"
             android:label="@string/title_activity_trip" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
+                android:value="net.mastrgamr.transitpulse.MainActivity" />
         </activity>
 
         <meta-data
@@ -50,20 +50,20 @@
             android:value="AIzaSyDV8NYs_uA6u0i_B1WdTkKykUD9sXRXWUw" />
 
         <activity
-            android:name=".AboutActivity"
+            android:name="net.mastrgamr.transitpulse.AboutActivity"
             android:label="@string/title_activity_about"
-            android:parentActivityName=".MainActivity" >
+            android:parentActivityName="net.mastrgamr.transitpulse.MainActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="net.mastrgamr.mtapulse.MainActivity" />
+                android:value="net.mastrgamr.transitpulse.MainActivity" />
         </activity>
         <activity
-            android:name=".LicenseActivity"
+            android:name="net.mastrgamr.transitpulse.LicenseActivity"
             android:label="@string/title_activity_license"
-            android:parentActivityName=".AboutActivity" >
+            android:parentActivityName="net.mastrgamr.transitpulse.AboutActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="net.mastrgamr.mtapulse.AboutActivity" />
+                android:value="net.mastrgamr.transitpulse.AboutActivity" />
         </activity>
     </application>
 
