@@ -23,9 +23,10 @@ public class Routes implements Serializable {
     private String routeColor;
     private String routeTextColor;
 
-    public Routes() { }
+    public Routes() {
+    }
 
-    public Routes(String routeId, String routeShortName, String routeLongName, String routeDesc, String routeUrl, String routeColor, String routeTextColor){
+    public Routes(String routeId, String routeShortName, String routeLongName, String routeDesc, String routeUrl, String routeColor, String routeTextColor) {
         this.routeId = routeId;
         this.routeShortName = routeShortName;
         this.routeLongName = routeLongName;
@@ -35,7 +36,7 @@ public class Routes implements Serializable {
         this.routeTextColor = routeTextColor;
     }
 
-    public Routes(String routeId, String routeShortName, String routeLongName, String routeDesc, String routeUrl, String routeColor){
+    public Routes(String routeId, String routeShortName, String routeLongName, String routeDesc, String routeUrl, String routeColor) {
         this.routeId = routeId;
         this.routeShortName = routeShortName;
         this.routeLongName = routeLongName;
@@ -46,7 +47,7 @@ public class Routes implements Serializable {
 
     @Override
     public String toString() {
-        if(routeTextColor == null){
+        if (routeTextColor == null) {
             return "Route ID: " + routeId +
                     ", Short Name: " + routeShortName +
                     ", Long Name: " + routeLongName +

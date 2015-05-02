@@ -14,9 +14,10 @@ public class Shapes implements Serializable {
     private String shapePtLon;
     private String shapePtSeq;
 
-    public Shapes() { }
+    public Shapes() {
+    }
 
-    public Shapes(String shapeId, String shapePtLat, String shapePtLon, String shapePtSeq){
+    public Shapes(String shapeId, String shapePtLat, String shapePtLon, String shapePtSeq) {
         this.shapeId = shapeId;
         this.shapePtLat = shapePtLat;
         this.shapePtLon = shapePtLon;

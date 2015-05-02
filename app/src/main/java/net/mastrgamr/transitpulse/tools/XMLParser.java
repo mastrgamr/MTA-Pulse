@@ -6,15 +6,15 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 
 /**
  * Project: MTA Pulse
@@ -54,7 +54,7 @@ public class XMLParser {
         @Override
         public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
             super.startElement(uri, localName, qName, attributes);
-            if(qName.equals("line")){
+            if (qName.equals("line")) {
                 transitType = new TransportationType();
             }
         }
@@ -62,7 +62,7 @@ public class XMLParser {
         @Override
         public void endElement(String uri, String localName, String qName) throws SAXException {
 
-            if(qName.equals("line")){
+            if (qName.equals("line")) {
                 transitTypes.add(transitType);
             } else if (qName.equalsIgnoreCase("name")) {
                 //System.out.println(text);
@@ -70,7 +70,7 @@ public class XMLParser {
             } else if (qName.equalsIgnoreCase("status")) {
                 //System.out.println(text);
                 transitType.setStatus(text);
-            }else if (qName.equalsIgnoreCase("text")) {
+            } else if (qName.equalsIgnoreCase("text")) {
                 //System.out.println(text);
                 transitType.setText(text);
             } else if (qName.equalsIgnoreCase("date")) {

@@ -11,7 +11,7 @@ import android.net.NetworkInfo;
  */
 public class NetworkStatics {
 
-    public static boolean isDeviceOnline(Context c){
+    public static boolean isDeviceOnline(Context c) {
         ConnectivityManager cm = (ConnectivityManager) c.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo ni = cm.getActiveNetworkInfo();
         return (ni != null);

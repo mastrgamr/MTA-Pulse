@@ -3,7 +3,9 @@ package net.mastrgamr.transitpulse.gtfs_realtime;
 import android.content.Context;
 import android.util.Log;
 
-import com.google.transit.realtime.GtfsRealtime.*;
+import com.google.transit.realtime.GtfsRealtime.FeedEntity;
+import com.google.transit.realtime.GtfsRealtime.FeedHeader;
+import com.google.transit.realtime.GtfsRealtime.FeedMessage;
 import com.google.transit.realtime.GtfsRealtimeConstants;
 
 /**
@@ -27,7 +29,7 @@ public class EntityFactory {
 
     private Context c;
 
-    public EntityFactory(FeedMessage feedMessage, Context c){
+    public EntityFactory(FeedMessage feedMessage, Context c) {
 
         this.feedMessage = feedMessage;
         this.c = c;
@@ -49,10 +51,10 @@ public class EntityFactory {
             builder.setId(String.valueOf(i));
 
             //all entities have TripUpdates
-            if(entity.hasTripUpdate()){
+            if (entity.hasTripUpdate()) {
                 //if entity is a TripUpdate and builder has a TripUpdate,
                 //that means the last entity had no Vehicle (last stop train), so build Entity
-                if(builder.hasTripUpdate()) {
+                if (builder.hasTripUpdate()) {
                     fm.addEntity(builder);
                     i++;
                     builder.clearTripUpdate(); //TODO:Potential bug later, keep eye on EntityID
@@ -61,7 +63,7 @@ public class EntityFactory {
             }
 
             //some entities don't have Vehicles, if it6 does add builder and reset builder
-            if(builder.hasTripUpdate() && entity.hasVehicle()) {
+            if (builder.hasTripUpdate() && entity.hasVehicle()) {
                 builder.setVehicle(entity.getVehicle()); //add Vehicle
                 fm.addEntity(builder);
                 i++;

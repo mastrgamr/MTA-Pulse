@@ -11,7 +11,7 @@ import java.io.Serializable;
  * Contains information parsed in from the GTFS Static feed's 'stops.txt'.
  * TODO: PointD may not be needed
  */
-public class Stops implements Serializable{
+public class Stops implements Serializable {
 
     private static final long serialVersionUID = 2L;
 
@@ -22,9 +22,10 @@ public class Stops implements Serializable{
 
     //private PointD point;
 
-    public Stops() { }
+    public Stops() {
+    }
 
-    public Stops(String id, String name, String lat, String lon){
+    public Stops(String id, String name, String lat, String lon) {
         stopId = id;
         stopName = name;
         stopLat = lat;
@@ -32,7 +33,7 @@ public class Stops implements Serializable{
         //point = new PointD(Double.parseDouble(lat), Double.parseDouble(lon));
     }
 
-    public Stops(String name, String lat, String lon){
+    public Stops(String name, String lat, String lon) {
         stopName = name;
         stopLat = lat;
         stopLon = lon;

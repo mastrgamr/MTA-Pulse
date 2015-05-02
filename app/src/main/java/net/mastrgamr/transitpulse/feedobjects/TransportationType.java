@@ -17,7 +17,8 @@ public class TransportationType {
     private String date;
     private String time;
 
-    public TransportationType(){ }
+    public TransportationType() {
+    }
 
     public void setName(String name) {
         this.name = name;

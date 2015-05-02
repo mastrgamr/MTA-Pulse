@@ -22,5 +22,6 @@ public class NearbyStopsInfo {
     @JsonField
     public ArrayList<RTRoutes> trains;
 
-    public NearbyStopsInfo() { }
+    public NearbyStopsInfo() {
+    }
 }

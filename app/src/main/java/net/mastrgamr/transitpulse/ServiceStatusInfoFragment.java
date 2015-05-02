@@ -1,8 +1,8 @@
 package net.mastrgamr.transitpulse;
 
 import android.app.Activity;
-import android.os.Bundle;
 import android.app.Fragment;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -62,7 +62,7 @@ public class ServiceStatusInfoFragment extends Fragment {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_service_status_info, container, false);
         //serviceStatusText = getArguments().getString(STATUS_TEXT);
-        statusInfo = (TextView)v.findViewById(R.id.statusText);
+        statusInfo = (TextView) v.findViewById(R.id.statusText);
         statusInfo.setText(serviceStatusText);
 
         return v;

@@ -9,7 +9,8 @@ package net.mastrgamr.transitpulse;
 import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.location.Location;
-import android.os.*;
+import android.os.AsyncTask;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,7 +23,6 @@ import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
@@ -49,8 +49,7 @@ import java.util.ArrayList;
 //Will contain the schedule information of the MTA system.
 public class TripFragment extends Fragment implements
         OnMapReadyCallback,
-        GoogleMap.OnMyLocationChangeListener
-{
+        GoogleMap.OnMyLocationChangeListener {
     private final String LOG_TAG = getClass().getSimpleName();
     private final int CSV_HEADER = 1;
 
@@ -71,7 +70,7 @@ public class TripFragment extends Fragment implements
     private ArrayList<Stops> stopsList;
 
     private RtGtfsParser gtfsParser;
-    private TripListAdapter tripListAdapter;
+    public TripListAdapter tripListAdapter;
 
     private DataGenerator dataGen;
     private DataMaps<Stops> stopsDataMap;
@@ -79,7 +78,8 @@ public class TripFragment extends Fragment implements
 
     PolylineOptions shapesOptions = new PolylineOptions();
 
-    public TripFragment() { }
+    public TripFragment() {
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -101,8 +101,7 @@ public class TripFragment extends Fragment implements
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState)
-    {
+                             Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_trip, container, false);
 
         /*try {
@@ -113,18 +112,18 @@ public class TripFragment extends Fragment implements
             e.printStackTrace();
         }*/
 
-        mapView = (MapView)rootView.findViewById(R.id.map);
+        mapView = (MapView) rootView.findViewById(R.id.map);
         mapView.onCreate(savedInstanceState);//TODO: Potential bug? calling OnCreate inside OnCreateView
         mapView.getMapAsync(this);
 
-        subwayList = (HeaderGridView)rootView.findViewById(R.id.subwayList);
+        subwayList = (HeaderGridView) rootView.findViewById(R.id.subwayList);
 
         subwayList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if(tripListAdapter != null) {
-                    if(!tripListAdapter.isStationSelected()) {
-                        tripListAdapter.setStationSelected(true, position);
+                if (tripListAdapter != null) {
+                    if (!tripListAdapter.isStationSelected()) {
+                        tripListAdapter.setStationSelected(true, position - 1);
                         subwayList.setNumColumns(2);
                     }
                 }
@@ -133,7 +132,7 @@ public class TripFragment extends Fragment implements
         subwayList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                if(tripListAdapter != null) {
+                if (tripListAdapter != null) {
                     tripListAdapter.setUpDownFlip();
                 }
                 return true;
@@ -171,7 +170,7 @@ public class TripFragment extends Fragment implements
         }*/
 
         StikkyHeaderBuilderEx.stickTo(subwayList)
-                .setHeader(R.id.mapLayout, (ViewGroup)getView())
+                .setHeader(R.id.mapLayout, (ViewGroup) getView())
                 .build();
         //subwayList.setAdapter(tripListAdapter);
     }
@@ -195,13 +194,13 @@ public class TripFragment extends Fragment implements
     public void onMyLocationChange(Location location) {
         //TODO:If location is significantly further away from loaded location, Generate new data.
         //40.800148, -73.945238 randomLoc for test
-        if(track && location != null) {
+        if (track && location != null) {
             //Toast.makeText(this.getActivity(), "Map Loaded", Toast.LENGTH_SHORT).show();
             LatLng loc = new LatLng(location.getLatitude(),
                     location.getLongitude());
             gMap.animateCamera(CameraUpdateFactory.newLatLngZoom(loc, 15f));
 
-            if(initialLoad) {
+            if (initialLoad) {
                 initialLoad = false;
                 loadedLoc = location;
                 dataGen = new DataGenerator();
@@ -223,8 +222,14 @@ public class TripFragment extends Fragment implements
         }
     }
 
-    private class DataGenerator extends AsyncTask<Void, Void, Void>{
+    public void setSubwayListColumns(int numOfCol) {
+        if (subwayList != null)
+            subwayList.setNumColumns(numOfCol);
+    }
+
+    private class DataGenerator extends AsyncTask<Void, Void, Void> {
         ProgressDialog pd;
+
         @Override
         protected void onPreExecute() {
             //super.onPreExecute();

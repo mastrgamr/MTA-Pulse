@@ -54,14 +54,15 @@ public class SurroundingStopsList {
     @JsonIgnore
     private File preCheck;
 
-    public SurroundingStopsList() { }
+    public SurroundingStopsList() {
+    }
 
-    public SurroundingStopsList(GtfsRealtime.FeedMessage feedMessage, Context c){
+    public SurroundingStopsList(GtfsRealtime.FeedMessage feedMessage, Context c) {
         this.feedMessage = feedMessage;
         this.c = c;
     }
 
-    public ArrayList<ArrayList<NearbyStopsInfo>> getStopsByLocationList(Location loc, DataMaps<Stops> stopsDataMap){
+    public ArrayList<ArrayList<NearbyStopsInfo>> getStopsByLocationList(Location loc, DataMaps<Stops> stopsDataMap) {
 
         ArrayListSearcher2 search = new ArrayListSearcher2();
 
@@ -79,27 +80,23 @@ public class SurroundingStopsList {
         nearbyNorth.add(nearby);
         nearbySouth.add(nearby);
 
-        for(GtfsRealtime.FeedEntity entity : feedMessage.getEntityList())
-        {
+        for (GtfsRealtime.FeedEntity entity : feedMessage.getEntityList()) {
             //PointD start = new PointD(40.882305, -73.833145); //HOME
             //PointD start = new PointD(40.754191, -73.982881); //RANDOM, between TS and GS
             PointD start = new PointD(loc.getLatitude(), loc.getLongitude());
             //Log.d(LOG_TAG, start.toString());
             PointD points;
 
-            for(String stopId : stopsDataMap.keySet())
-            {
+            for (String stopId : stopsDataMap.keySet()) {
                 points = new PointD(
                         Double.parseDouble(stopsDataMap.get(stopId).getStopLat()),
                         Double.parseDouble(stopsDataMap.get(stopId).getStopLon()));
-                if(start.distance(points) <= 0.0067)
-                { //If stop is within 2,500 feet, get list of stops
+                if (start.distance(points) <= 0.0067) { //If stop is within 2,500 feet, get list of stops
                     for (GtfsRealtime.TripUpdate.StopTimeUpdate stu : entity.getTripUpdate().getStopTimeUpdateList()) {
                         if (stu.getStopId().equals(stopId)) {
 
                             //Check for down/uptown trainstop
-                            if (stu.getStopId().endsWith("N"))
-                            {
+                            if (stu.getStopId().endsWith("N")) {
                                 boolean addNewNorth = false;
                                 boolean addNewRoute = false;
                                 int nearbyInd;
@@ -119,15 +116,14 @@ public class SurroundingStopsList {
                                     routes.routeId = entity.getTripUpdate().getTrip().getRouteId();
                                     routes.stopTimes = new ArrayList<>();
                                     //Create inner class with actual stop names and stop times field
-                                    if(stu.getArrival().getTime() == 0) {
+                                    if (stu.getArrival().getTime() == 0) {
                                         routes.stopTimes.add(stu.getDeparture().getTime());
                                     } else {
                                         routes.stopTimes.add(stu.getArrival().getTime());
                                     }
                                     nearby.trains = new ArrayList<>();
                                     nearby.trains.add(routes);
-                                }
-                                else //contain the stop
+                                } else //contain the stop
                                 {
                                     /**
                                      * If a stop is contained within this NearbyStop, it means there's a route inside.
@@ -144,7 +140,7 @@ public class SurroundingStopsList {
                                         route = new RTRoutes();
                                         route.routeId = entity.getTripUpdate().getTrip().getRouteId();
                                         route.stopTimes = new ArrayList<>();
-                                        if(stu.getArrival().getTime() == 0) {
+                                        if (stu.getArrival().getTime() == 0) {
                                             route.stopTimes.add(stu.getDeparture().getTime());
                                         } else {
                                             route.stopTimes.add(stu.getArrival().getTime());
@@ -154,14 +150,12 @@ public class SurroundingStopsList {
                                         Collections.sort(nearbyNorth.get(nearbyInd).trains.get(routeInd).stopTimes);
                                     }
                                 }
-                                if(addNewNorth)
+                                if (addNewNorth)
                                     nearbyNorth.add(nearby);
-                                if(addNewRoute) {
+                                if (addNewRoute) {
                                     nearbyNorth.get(nearbyInd).trains.add(route);
                                 }
-                            }
-                            else if (stu.getStopId().endsWith("S"))
-                            {
+                            } else if (stu.getStopId().endsWith("S")) {
                                 boolean addNewSouth = false;
                                 boolean addNewRoute = false;
                                 int nearbyInd;
@@ -179,15 +173,14 @@ public class SurroundingStopsList {
                                     routes.stopTimes = new ArrayList<>();
                                     routes.routeId = entity.getTripUpdate().getTrip().getRouteId();
                                     //Create inner class with actual stop names and stop times field
-                                    if(stu.getArrival().getTime() == 0) {
+                                    if (stu.getArrival().getTime() == 0) {
                                         routes.stopTimes.add(stu.getDeparture().getTime());
                                     } else {
                                         routes.stopTimes.add(stu.getArrival().getTime());
                                     }
                                     nearby.trains = new ArrayList<>();
                                     nearby.trains.add(routes);
-                                }
-                                else {
+                                } else {
                                     /**
                                      * If a stop is contained within this NearbyStop, it means there's a route inside.
                                      * A Route has StopTimes in it, check if the route is listed within the stop:
@@ -203,7 +196,7 @@ public class SurroundingStopsList {
                                         route = new RTRoutes();
                                         route.routeId = entity.getTripUpdate().getTrip().getRouteId();
                                         route.stopTimes = new ArrayList<>();
-                                        if(stu.getArrival().getTime() == 0) {
+                                        if (stu.getArrival().getTime() == 0) {
                                             route.stopTimes.add(stu.getDeparture().getTime());
                                         } else {
                                             route.stopTimes.add(stu.getArrival().getTime());
@@ -213,9 +206,9 @@ public class SurroundingStopsList {
                                         Collections.sort(nearbySouth.get(nearbyInd).trains.get(routeInd).stopTimes);
                                     }
                                 }
-                                if(addNewSouth)
+                                if (addNewSouth)
                                     nearbySouth.add(nearby);
-                                if(addNewRoute) {
+                                if (addNewRoute) {
                                     nearbySouth.get(nearbyInd).trains.add(route);
                                 }
                             }
@@ -234,11 +227,11 @@ public class SurroundingStopsList {
         return nearbyStops;
     }
 
-    public ArrayList<ArrayList<NearbyStopsInfo>> getNearbyStops(){
+    public ArrayList<ArrayList<NearbyStopsInfo>> getNearbyStops() {
         return nearbyStops;
     }
 
-    private void cacheFile(SurroundingStopsList stopsList){
+    private void cacheFile(SurroundingStopsList stopsList) {
         //File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
         File path = c.getCacheDir();
         FileOutputStream file;
@@ -256,15 +249,15 @@ public class SurroundingStopsList {
         }
     }
 
-    public ArrayList<ArrayList<NearbyStopsInfo>> getCachedFile(Location loc, DataMaps<Stops> stopsDataMap){
+    public ArrayList<ArrayList<NearbyStopsInfo>> getCachedFile(Location loc, DataMaps<Stops> stopsDataMap) {
         FileInputStream fis;
 
         Log.d(LOG_TAG, "checking if NearbyStopsJSON exists");
         File[] files = c.getCacheDir().listFiles();
         preCheck = null;
 
-        for(File file : files){
-            if(file.getName().startsWith("nearbyStops")) {
+        for (File file : files) {
+            if (file.getName().startsWith("nearbyStops")) {
                 preCheck = file;
                 try {
                     Log.d(LOG_TAG, "cached NearbyStopsJSON exists");

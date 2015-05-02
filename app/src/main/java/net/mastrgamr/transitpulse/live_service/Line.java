@@ -8,8 +8,8 @@ import org.simpleframework.xml.Root;
  * Author: Stuart Smith
  * Date: 3/11/2015
  */
-@Root(name="line")
-public class Line{
+@Root(name = "line")
+public class Line {
 
     @Element(name = "name")
     private String name;
@@ -29,7 +29,8 @@ public class Line{
     @Element(name = "url", required = false)
     private String url;
 
-    public Line(){ }
+    public Line() {
+    }
 
     public String getName() {
         return name;

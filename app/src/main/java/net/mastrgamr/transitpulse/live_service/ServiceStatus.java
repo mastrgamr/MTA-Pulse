@@ -30,15 +30,18 @@ public class ServiceStatus {
     private URL url;
     private static Context c;
 
-    public ServiceStatus() { }
+    public ServiceStatus() {
+    }
 
-    public ServiceStatus( Context c ) { this.c = c;}
+    public ServiceStatus(Context c) {
+        this.c = c;
+    }
 
     public ServiceStatus(String url) throws MalformedURLException {
         this.url = new URL(url); //TODO: download the URL and store internally on device cache
     }
 
-    public static ServiceStatus getParsedStatus(){
+    public static ServiceStatus getParsedStatus() {
         Serializer serializer = new Persister();
         try {
             instance = serializer.read(ServiceStatus.class, c.getResources().openRawResource(R.raw.servicestatus));
@@ -69,15 +72,27 @@ public class ServiceStatus {
     @ElementList(name = "MetroNorth")
     private List<Line> metronorth;
 
-    public List<Line> getSubways(){ return subways; }
+    public List<Line> getSubways() {
+        return subways;
+    }
 
-    public List<Line> getBuses(){ return busses; }
+    public List<Line> getBuses() {
+        return busses;
+    }
 
-    public List<Line> getLirr(){ return lirr; }
+    public List<Line> getLirr() {
+        return lirr;
+    }
 
-    public List<Line> getMetronorth(){ return metronorth; }
+    public List<Line> getMetronorth() {
+        return metronorth;
+    }
 
-    public String getTimeStamp() { return timestamp; }
+    public String getTimeStamp() {
+        return timestamp;
+    }
 
-    public int getResponsecode() { return responsecode; }
+    public int getResponsecode() {
+        return responsecode;
+    }
 }

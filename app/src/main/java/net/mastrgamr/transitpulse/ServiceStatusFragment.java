@@ -58,7 +58,8 @@ public class ServiceStatusFragment extends Fragment implements SwipeRefreshLayou
         return fragment;
     }
 
-    public ServiceStatusFragment() { }
+    public ServiceStatusFragment() {
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -74,25 +75,25 @@ public class ServiceStatusFragment extends Fragment implements SwipeRefreshLayou
         rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
         //statusListAdapter = new StatusListAdapter(rootView.getContext());
-        refreshLayout = (SwipeRefreshLayout)rootView.findViewById(R.id.refresh_container);
+        refreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.refresh_container);
         refreshLayout.setOnRefreshListener(this);
-        if(Build.VERSION.SDK_INT < 21){
+        if (Build.VERSION.SDK_INT < 21) {
             refreshLayout.setColorSchemeColors(android.R.color.holo_blue_bright,
                     android.R.color.holo_green_light,
                     android.R.color.holo_orange_light,
                     android.R.color.holo_red_light);
         }
 
-        listView = (ListView)rootView.findViewById(R.id.status_list);
+        listView = (ListView) rootView.findViewById(R.id.status_list);
 
         //needed for back button from another fragment/activity
-        if(statusListAdapter != null)
+        if (statusListAdapter != null)
             listView.setAdapter(statusListAdapter);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if(statusListAdapter.getStatusText(position) != null) {
+                if (statusListAdapter.getStatusText(position) != null) {
                     ((MainActivity) getActivity()).onStatusClicked(statusListAdapter.getStatusText(position));
                 } else {
                     Toast.makeText(rootView.getContext(), "Service is good.\nTake the train!", Toast.LENGTH_SHORT).show();
@@ -114,7 +115,7 @@ public class ServiceStatusFragment extends Fragment implements SwipeRefreshLayou
         //Toast.makeText(rootView.getContext(), "Refresh not supported yet!", Toast.LENGTH_SHORT).show();
         Log.d(LOG_TAG, "REFRESHING STATUS INFO!");
         refreshLayout.setRefreshing(true);
-        if(populateList.getStatus() != AsyncTask.Status.RUNNING) {
+        if (populateList.getStatus() != AsyncTask.Status.RUNNING) {
             refreshStatus = true;
             populateList = new PopulateList();
             populateList.execute(MtaFeeds.serviceStatus);
@@ -140,8 +141,8 @@ public class ServiceStatusFragment extends Fragment implements SwipeRefreshLayou
             Log.d(LOG_TAG, "checking if file exists");
             File[] files = getActivity().getCacheDir().listFiles();
             File preCheck = null;
-            for(File file : files){
-                if(file.getName().startsWith("serviceStat")) {
+            for (File file : files) {
+                if (file.getName().startsWith("serviceStat")) {
                     preCheck = file;
                     Log.d(LOG_TAG, "file exists");
                     break;
@@ -153,24 +154,25 @@ public class ServiceStatusFragment extends Fragment implements SwipeRefreshLayou
              * Else generate a new one.
              */
             try {
-                if(preCheck != null) {
+                if (preCheck != null) {
                     Log.d(LOG_TAG, "Assigning servicestatus to found file");
                     serviceStatus = serializer.read(ServiceStatus.class, preCheck);
                     Log.d(LOG_TAG, (serviceStatus == null) + " found to be null");
                 }
 
+                System.out.println(refreshStatus + "RefreshStatus");
                 //TODO:Potential crash! Expectation is the first bool == null
-                if(serviceStatus == null || refreshStatus || (((System.currentTimeMillis() - preCheck.lastModified()) >= 300000) && NetworkStatics.isDeviceOnline(getActivity()))){
+                if (refreshStatus || serviceStatus == null || (((System.currentTimeMillis() - preCheck.lastModified()) >= 300000) && NetworkStatics.isDeviceOnline(getActivity()))) {
                     Log.d(LOG_TAG, "5 mins older, or file dont exist, or refresh prompted. Generating new file");
                     try {
-                        if(preCheck != null)
+                        if (preCheck != null)
                             preCheck.delete();
 
                         url = new URL(urls[0]);
                         serviceStatus = serializer.read(ServiceStatus.class, url.openStream());
                         statusListAdapter = new StatusListAdapter(rootView.getContext(), serviceStatus);
 
-                        HttpRequest request =  HttpRequest.get(url);
+                        HttpRequest request = HttpRequest.get(url);
                         File file = null;
                         if (request.ok()) {
                             file = File.createTempFile("serviceStat", ".xml", getActivity().getCacheDir());

@@ -15,7 +15,8 @@ public class StopTimes implements Serializable {
     private String stopId;
     private String stopSeq;
 
-    public StopTimes() { }
+    public StopTimes() {
+    }
 
     public StopTimes(String tripId, String arrivalTime, String departureTime, String stopId, String stopSeq) {
         this.tripId = tripId;

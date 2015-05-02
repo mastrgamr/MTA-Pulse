@@ -2,8 +2,8 @@ package net.mastrgamr.transitpulse;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -26,7 +26,7 @@ public class LicenseActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_license);
 
-        facebookLicense = (Button)findViewById(R.id.button_facebook_shimmer);
+        facebookLicense = (Button) findViewById(R.id.button_facebook_shimmer);
         facebookLicense.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -34,7 +34,7 @@ public class LicenseActivity extends ActionBarActivity {
             }
         });
 
-        httpLicense = (Button)findViewById(R.id.button_http_request);
+        httpLicense = (Button) findViewById(R.id.button_http_request);
         httpLicense.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -42,7 +42,7 @@ public class LicenseActivity extends ActionBarActivity {
             }
         });
 
-        csvLicense = (Button)findViewById(R.id.button_commons_csv);
+        csvLicense = (Button) findViewById(R.id.button_commons_csv);
         csvLicense.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -50,7 +50,7 @@ public class LicenseActivity extends ActionBarActivity {
             }
         });
 
-        simpleLicense = (Button)findViewById(R.id.button_simple_xml);
+        simpleLicense = (Button) findViewById(R.id.button_simple_xml);
         simpleLicense.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -58,7 +58,7 @@ public class LicenseActivity extends ActionBarActivity {
             }
         });
 
-        stikkyLicense = (Button)findViewById(R.id.button_stikky_header);
+        stikkyLicense = (Button) findViewById(R.id.button_stikky_header);
         stikkyLicense.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -66,7 +66,7 @@ public class LicenseActivity extends ActionBarActivity {
             }
         });
 
-        aospLicense = (Button)findViewById(R.id.button_android_open_source);
+        aospLicense = (Button) findViewById(R.id.button_android_open_source);
         aospLicense.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -74,7 +74,7 @@ public class LicenseActivity extends ActionBarActivity {
             }
         });
 
-        playServicesLicense = (Button)findViewById(R.id.button_google_play);
+        playServicesLicense = (Button) findViewById(R.id.button_google_play);
         playServicesLicense.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -82,7 +82,7 @@ public class LicenseActivity extends ActionBarActivity {
             }
         });
 
-        protoLicense = (Button)findViewById(R.id.button_protocol_buffers);
+        protoLicense = (Button) findViewById(R.id.button_protocol_buffers);
         protoLicense.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -114,10 +114,10 @@ public class LicenseActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void displayDialog(int source){
+    public void displayDialog(int source) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
-        switch(source) {
+        switch (source) {
             case 0:
                 builder.setMessage(R.string.facebook_shimmer_license)
                         .setTitle(R.string.facebook_shimmer);

@@ -4,8 +4,8 @@ import android.content.Context;
 import android.location.Location;
 import android.util.Log;
 
-import com.google.transit.realtime.GtfsRealtime.FeedMessage;
 import com.google.transit.realtime.GtfsRealtime.FeedEntity;
+import com.google.transit.realtime.GtfsRealtime.FeedMessage;
 import com.google.transit.realtime.GtfsRealtime.TripUpdate;
 import com.google.transit.realtime.GtfsRealtime.TripUpdate.StopTimeUpdate;
 import com.google.transit.realtime.GtfsRealtime.VehiclePosition;
@@ -46,7 +46,6 @@ public class RtGtfsParser {
     private Context c;
 
     private EntityFactory factory;
-    private NearbyStopsFactory nearbyStopsFactory;
     private FeedMessage feedMessage;
     private URL url;
 
@@ -70,11 +69,11 @@ public class RtGtfsParser {
      */
     public void refreshFeed() {
         //Attempt to get cached file, if none exist Assign the new feed
-        if(NetworkStatics.isDeviceOnline(c))
+        if (NetworkStatics.isDeviceOnline(c))
             saveMessage();
         feedMessage = getSavedMessage();
 
-        if(DEBUG) {
+        if (DEBUG) {
             Log.d(LOG_TAG, "Refreshing Feed...");
         }
 
@@ -89,7 +88,7 @@ public class RtGtfsParser {
             VehiclePosition vehicle = entity.getVehicle();
             //Alert alert = entity.getAlert(); //TODO: Handle alerts later app version.
 
-            if(DEBUG) {
+            if (DEBUG) {
                 Log.d(LOG_TAG, "LISTING ENTITIES");
                 Log.d(LOG_TAG, "----------------");
             }
@@ -112,10 +111,10 @@ public class RtGtfsParser {
                 }
             }*/
 
-            for(StopTimeUpdate stu : tripUpdate.getStopTimeUpdateList()){
-                if(!entity.hasTripUpdate())
+            for (StopTimeUpdate stu : tripUpdate.getStopTimeUpdateList()) {
+                if (!entity.hasTripUpdate())
                     continue;
-                if(stu.getArrival().getTime() == 0) //TODO: Check this out for trains approaching last stop
+                if (stu.getArrival().getTime() == 0) //TODO: Check this out for trains approaching last stop
                     continue;
                 //System.out.println(stu.getStopId() + " -- ENTITY STOPid");
                 stopIds.add(stu.getStopId());
@@ -149,7 +148,7 @@ public class RtGtfsParser {
         }
     }
 
-	public class TrainStop {
+    public class TrainStop {
         public String routeId;
         public TripUpdate.StopTimeUpdate stu;
     }
@@ -158,11 +157,11 @@ public class RtGtfsParser {
      * Returns trains for specific stop.
      * TODO: Use for gMap Marker(which will be a train stop) click.
      */
-    public ArrayList<TrainStop> getTrainsForStop(String stopId){
-		ArrayList<TrainStop> trainStopList = new ArrayList<>();
+    public ArrayList<TrainStop> getTrainsForStop(String stopId) {
+        ArrayList<TrainStop> trainStopList = new ArrayList<>();
         TrainStop trainStop;
 
-        for(FeedEntity entity : feedMessage.getEntityList()) {
+        for (FeedEntity entity : feedMessage.getEntityList()) {
             for (StopTimeUpdate stu : entity.getTripUpdate().getStopTimeUpdateList()) {
                 if (stu.getStopId().equals(stopId)) {
                     if (DEBUG) {
@@ -180,10 +179,10 @@ public class RtGtfsParser {
                 }
             }
         }
-	    return trainStopList;
+        return trainStopList;
     }
 
-    public ArrayList<ArrayList<NearbyStopsInfo>> getStopsByLocationList(Location loc, DataMaps<Stops> stopsDataMap){
+    public ArrayList<ArrayList<NearbyStopsInfo>> getStopsByLocationList(Location loc, DataMaps<Stops> stopsDataMap) {
 
         //nearbyStopsList = new SurroundingStopsList(feedMessage, c);
         //return nearbyStopsList.getStopsByLocationList(loc, stopsDataMap);
@@ -192,7 +191,7 @@ public class RtGtfsParser {
         return nearbyStopsList.getCachedFile(loc, stopsDataMap);
     }
 
-    public NearbyStopsProto.NearbyStopsFeed getStopsByLocationFeed(Location loc, DataMaps<Stops> stopsDataMap){
+    public NearbyStopsProto.NearbyStopsFeed getStopsByLocationFeed(Location loc, DataMaps<Stops> stopsDataMap) {
 
         //nearbyStopsList = new SurroundingStopsList(feedMessage, c);
         //return nearbyStopsList.getStopsByLocationList(loc, stopsDataMap);
@@ -203,30 +202,27 @@ public class RtGtfsParser {
     /**
      * Gets list of stops around a specific location. Default 2,500 feet.
      *
-     * @param loc Location passed in (usually current location based on gMap position.
+     * @param loc          Location passed in (usually current location based on gMap position.
      * @param stopsDataMap DataMap to parse through to match stops.
      * @return ArrayList of trains approaching a stop surrounding a location.
      */
-    public ArrayList<TrainStop> getStopsByLocation(Location loc, DataMaps<Stops> stopsDataMap){
+    public ArrayList<TrainStop> getStopsByLocation(Location loc, DataMaps<Stops> stopsDataMap) {
         ArrayList<TrainStop> trainStopList = new ArrayList<>();
         TrainStop trainStop;
 
         ArrayList<StopTimeUpdate> stuList = new ArrayList<>();
 
-        for(FeedEntity entity : feedMessage.getEntityList())
-        {
+        for (FeedEntity entity : feedMessage.getEntityList()) {
             //home - 40.882305, -73.833145
             PointD start = new PointD(loc.getLatitude(), loc.getLongitude());
             Log.d(LOG_TAG, start.toString());
             PointD points;
 
-            for(String stopId : stopsDataMap.keySet())
-            {
+            for (String stopId : stopsDataMap.keySet()) {
                 points = new PointD(
                         Double.parseDouble(stopsDataMap.get(stopId).getStopLat()),
                         Double.parseDouble(stopsDataMap.get(stopId).getStopLon()));
-                if(start.distance(points) <= 0.0067)
-                { //If stop is within 2,500 feet, get list of stops
+                if (start.distance(points) <= 0.0067) { //If stop is within 2,500 feet, get list of stops
                     for (StopTimeUpdate stu : entity.getTripUpdate().getStopTimeUpdateList()) {
                         if (stu.getStopId().equals(stopId)) {
                             Log.d(LOG_TAG, "Found stop");
@@ -251,16 +247,16 @@ public class RtGtfsParser {
     /**
      * Persist feedMessage.
      */
-    public void saveMessage(){
-        HttpRequest request =  HttpRequest.get(url);
+    public void saveMessage() {
+        HttpRequest request = HttpRequest.get(url);
 
         /**
          * Check if file exists to delete and prevent cluttering the cache dir.
          */
         Log.d(LOG_TAG, "checking if FeedMessage exists. Prevent cluttering cache dir.");
         File[] files = c.getCacheDir().listFiles();
-        for(File file : files){
-            if(file.getName().startsWith("feedMessage")) {
+        for (File file : files) {
+            if (file.getName().startsWith("feedMessage")) {
                 file.delete();
                 break;
             }
@@ -273,7 +269,7 @@ public class RtGtfsParser {
                 file.setLastModified(System.currentTimeMillis());
                 request.receive(file);
             }
-        } catch (IOException e){
+        } catch (IOException e) {
             Log.e(LOG_TAG, "File couldn't be created");
         }
     }
@@ -281,6 +277,7 @@ public class RtGtfsParser {
     /**
      * De-serialize FeedMessage. Perfect for retrieving saved feeds for the app to look
      * back to when device is offline.
+     *
      * @return De-serialized FeedMessage.
      */
     public FeedMessage getSavedMessage() {
@@ -290,8 +287,8 @@ public class RtGtfsParser {
         Log.d(LOG_TAG, "checking if FeedMessage exists");
         File[] files = c.getCacheDir().listFiles();
         File preCheck = null;
-        for(File file : files){
-            if(file.getName().startsWith("feedMessage")) {
+        for (File file : files) {
+            if (file.getName().startsWith("feedMessage")) {
                 preCheck = file;
                 try {
                     Log.d(LOG_TAG, "cached FeedMessage exists");

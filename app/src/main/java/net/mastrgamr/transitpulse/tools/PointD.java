@@ -14,7 +14,8 @@ public class PointD {
     private double x;
     private double y;
 
-    public PointD() { }
+    public PointD() {
+    }
 
     public PointD(double x, double y) {
         this.x = x;

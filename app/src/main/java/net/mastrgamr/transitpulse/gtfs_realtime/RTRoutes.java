@@ -21,5 +21,6 @@ public class RTRoutes {
     @JsonField
     public ArrayList<Long> stopTimes;
 
-    public RTRoutes() { }
+    public RTRoutes() {
+    }
 }

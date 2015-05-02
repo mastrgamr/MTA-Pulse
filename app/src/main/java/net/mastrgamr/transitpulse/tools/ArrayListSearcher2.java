@@ -12,18 +12,19 @@ import java.util.ArrayList;
  */
 public class ArrayListSearcher2 {
 
-    public ArrayListSearcher2() { }
+    public ArrayListSearcher2() {
+    }
 
-    public int containsStop(ArrayList<NearbyStopsInfo> nsi, String stopId){
-        for(NearbyStopsInfo nsi1 : nsi) {
+    public int containsStop(ArrayList<NearbyStopsInfo> nsi, String stopId) {
+        for (NearbyStopsInfo nsi1 : nsi) {
             if (nsi1.stopId.equals(stopId))
                 return nsi.indexOf(nsi1);
         }
         return -1;
     }
 
-    public int containsRoute(ArrayList<RTRoutes> rtr, String routeId){
-        for(RTRoutes rtr1 : rtr) {
+    public int containsRoute(ArrayList<RTRoutes> rtr, String routeId) {
+        for (RTRoutes rtr1 : rtr) {
             if (rtr1.routeId.equals(routeId))
                 return rtr.indexOf(rtr1);
         }

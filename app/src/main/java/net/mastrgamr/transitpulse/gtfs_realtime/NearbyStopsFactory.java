@@ -11,6 +11,8 @@ import net.mastrgamr.transitpulse.tools.DataMaps;
 import net.mastrgamr.transitpulse.tools.NearbyStopsProto;
 import net.mastrgamr.transitpulse.tools.PointD;
 
+import java.util.Collections;
+
 public class NearbyStopsFactory {
 
     private final String LOG_TAG = getClass().getSimpleName();
@@ -25,7 +27,7 @@ public class NearbyStopsFactory {
     NearbyStopsProto.NearbyStops.Builder nearby;
     NearbyStopsProto.Routes.Builder route;
 
-    public NearbyStopsFactory(GtfsRealtime.FeedMessage feedMessage){
+    public NearbyStopsFactory(GtfsRealtime.FeedMessage feedMessage) {
         this.feedMessage = feedMessage;
         header = NearbyStopsProto.FeedHeader.newBuilder();
         header.setTimestamp(System.currentTimeMillis());
@@ -33,10 +35,9 @@ public class NearbyStopsFactory {
         nearbySouth = NearbyStopsProto.UpDownStops.newBuilder();
         nearbyNorth.setUpOrDownTown(NearbyStopsProto.UpDownStops.UpOrDowntown.UPTOWN);
         nearbySouth.setUpOrDownTown(NearbyStopsProto.UpDownStops.UpOrDowntown.DOWNTOWN);
-        //nearby = NearbyStopsProto.NearbyStops.newBuilder();
     }
 
-    public NearbyStopsProto.NearbyStopsFeed publishNearbyFeed(Location loc, DataMaps<Stops> stopsDataMap){
+    public NearbyStopsProto.NearbyStopsFeed publishNearbyFeed(Location loc, DataMaps<Stops> stopsDataMap) {
 
         ArrayListSearcher search = new ArrayListSearcher();
         nearbyFeed = NearbyStopsProto.NearbyStopsFeed.newBuilder();
@@ -44,13 +45,7 @@ public class NearbyStopsFactory {
 
         long before = System.currentTimeMillis();
 
-        /*nearbyStops = new ArrayList<>();
-        nearbyNorth = new ArrayList<>();
-        nearbySouth = new ArrayList<>();
-        nearby = new NearbyStopsInfo();*/
-
-        for(GtfsRealtime.FeedEntity entity : feedMessage.getEntityList())
-        {
+        for (GtfsRealtime.FeedEntity entity : feedMessage.getEntityList()) {
             //PointD start = new PointD(40.882305, -73.833145); //HOME
             PointD start = new PointD(40.754191, -73.982881); //RANDOM, between TS and GS
             //PointD start = new PointD(loc.getLatitude(), loc.getLongitude());
@@ -58,19 +53,18 @@ public class NearbyStopsFactory {
             //Log.d(LOG_TAG, start.toString());
             PointD points;
 
-            for(String stopId : stopsDataMap.keySet())
-            {
+            boolean stopMatched = false;
+            for (String stopId : stopsDataMap.keySet()) {
                 points = new PointD(
                         Double.parseDouble(stopsDataMap.get(stopId).getStopLat()),
                         Double.parseDouble(stopsDataMap.get(stopId).getStopLon()));
-                if(start.distance(points) <= 0.0067)
-                { //If stop is within 2,500 feet, get list of stops
+                if (start.distance(points) <= 0.0067) { //If stop is within 2,500 feet, get list of stops
                     for (GtfsRealtime.TripUpdate.StopTimeUpdate stu : entity.getTripUpdate().getStopTimeUpdateList()) {
                         if (stu.getStopId().equals(stopId)) {
+                            stopMatched = true;
 
                             //Check for down/uptown trainstop
-                            if (stu.getStopId().endsWith("N"))
-                            {
+                            if (stu.getStopId().endsWith("N")) {
                                 boolean addNewNorth = false;
                                 boolean addNewRoute = false;
                                 int nearbyInd;
@@ -86,17 +80,16 @@ public class NearbyStopsFactory {
                                     nearby.setStopId(stu.getStopId());
                                     nearby.setStopName(stopsDataMap.get(stopId).getStopName());
 
-                                    NearbyStopsProto.Routes.Builder routes = NearbyStopsProto.Routes.newBuilder();
-                                    routes.setRouteId(entity.getTripUpdate().getTrip().getRouteId());
+                                    route = NearbyStopsProto.Routes.newBuilder();
+                                    route.setRouteId(entity.getTripUpdate().getTrip().getRouteId());
                                     //Create inner class with actual stop names and stop times field
-                                    if(stu.getArrival().getTime() == 0) {
-                                        routes.addStopTimes(stu.getDeparture().getTime());
+                                    if (stu.getArrival().getTime() == 0) {
+                                        route.addStopTimes(stu.getDeparture().getTime());
                                     } else {
-                                        routes.addStopTimes(stu.getArrival().getTime());
+                                        route.addStopTimes(stu.getArrival().getTime());
                                     }
-                                    nearby.addRoutes(routes);
-                                }
-                                else //contain the stop
+                                    nearby.addRoutes(route);
+                                } else //contain the stop
                                 {
                                     /**
                                      * If a stop is contained within this NearbyStop, it means there's a route inside.
@@ -113,33 +106,32 @@ public class NearbyStopsFactory {
                                         route = NearbyStopsProto.Routes.newBuilder();
                                         route.setRouteId(entity.getTripUpdate().getTrip().getRouteId());
                                         //route.stopTimes = new ArrayList<>();
-                                        if(stu.getArrival().getTime() == 0) {
+                                        if (stu.getArrival().getTime() == 0) {
                                             route.addStopTimes(stu.getDeparture().getTime());
                                         } else {
                                             route.addStopTimes(stu.getArrival().getTime());
                                         }
                                     } else {
-                                        NearbyStopsProto.NearbyStops.Builder nearBuild =
+                                        nearby =
                                                 NearbyStopsProto.NearbyStops.newBuilder(nearbyNorth.getNearby(nearbyInd));
-                                        NearbyStopsProto.Routes.Builder routeBuild =
-                                                NearbyStopsProto.Routes.newBuilder(nearBuild.getRoutes(routeInd));
-                                        routeBuild.addStopTimes(stu.getArrival().getTime());
-                                        nearBuild.removeRoutes(routeInd);
-                                        nearBuild.addRoutes(routeBuild);
+                                        route =
+                                                NearbyStopsProto.Routes.newBuilder(nearby.getRoutes(routeInd));
+                                        route.addStopTimes(stu.getArrival().getTime());
+                                        nearby.removeRoutes(routeInd);
+                                        //Collections.sort(route.getStopTimesList());
+                                        nearby.addRoutes(route);
                                         nearbyNorth.removeNearby(nearbyInd);
-                                        nearbyNorth.addNearby(nearBuild);
+                                        nearbyNorth.addNearby(nearby);
                                     }
                                 }
-                                if(addNewNorth)
+                                if (addNewNorth)
                                     nearbyNorth.addNearby(nearby);
-                                if(addNewRoute) {
+                                if (addNewRoute) {
                                     nearby = NearbyStopsProto.NearbyStops.newBuilder(nearbyNorth.getNearby(nearbyInd)).addRoutes(route);
                                     nearbyNorth.removeNearby(nearbyInd);
                                     nearbyNorth.addNearby(nearby);
                                 }
-                            }
-                            else if (stu.getStopId().endsWith("S"))
-                            {
+                            } else if (stu.getStopId().endsWith("S")) {
                                 boolean addNewSouth = false;
                                 boolean addNewRoute = false;
                                 int nearbyInd;
@@ -153,19 +145,18 @@ public class NearbyStopsFactory {
                                     nearby.setStopId(stu.getStopId());
                                     nearby.setStopName(stopsDataMap.get(stopId).getStopName());
 
-                                    NearbyStopsProto.Routes.Builder routes = NearbyStopsProto.Routes.newBuilder();
+                                    route = NearbyStopsProto.Routes.newBuilder();
                                     //routes.stopTimes = new ArrayList<>();
-                                    routes.setRouteId(entity.getTripUpdate().getTrip().getRouteId());
+                                    route.setRouteId(entity.getTripUpdate().getTrip().getRouteId());
                                     //Create inner class with actual stop names and stop times field
-                                    if(stu.getArrival().getTime() == 0) {
-                                        routes.addStopTimes(stu.getDeparture().getTime());
+                                    if (stu.getArrival().getTime() == 0) {
+                                        route.addStopTimes(stu.getDeparture().getTime());
                                     } else {
-                                        routes.addStopTimes(stu.getArrival().getTime());
+                                        route.addStopTimes(stu.getArrival().getTime());
                                     }
                                     //nearby.trains = new ArrayList<>();
-                                    nearby.addRoutes(routes);
-                                }
-                                else {
+                                    nearby.addRoutes(route);
+                                } else {
                                     /**
                                      * If a stop is contained within this NearbyStop, it means there's a route inside.
                                      * A Route has StopTimes in it, check if the route is listed within the stop:
@@ -180,37 +171,38 @@ public class NearbyStopsFactory {
                                         addNewRoute = true;
                                         route = NearbyStopsProto.Routes.newBuilder();
                                         route.setRouteId(entity.getTripUpdate().getTrip().getRouteId());
-                                        if(stu.getArrival().getTime() == 0) {
+                                        if (stu.getArrival().getTime() == 0) {
                                             route.addStopTimes(stu.getDeparture().getTime());
                                         } else {
                                             route.addStopTimes(stu.getArrival().getTime());
                                         }
                                     } else {
-//                                        NearbyStopsProto.Routes.Builder rtRoute =
-//                                                NearbyStopsProto.Routes.newBuilder(nearbySouth.getNearby(nearbyInd).getRoutes(routeInd)).addStopTimes(stu.getArrival().getTime());
-                                        NearbyStopsProto.NearbyStops.Builder nearBuild =
+                                        nearby =
                                                 NearbyStopsProto.NearbyStops.newBuilder(nearbySouth.getNearby(nearbyInd));
-                                        NearbyStopsProto.Routes.Builder routeBuild =
-                                                NearbyStopsProto.Routes.newBuilder(nearBuild.getRoutes(routeInd));
-                                        routeBuild.addStopTimes(stu.getArrival().getTime());
-                                        nearBuild.removeRoutes(routeInd);
-                                        nearBuild.addRoutes(routeBuild);
+                                        route =
+                                                NearbyStopsProto.Routes.newBuilder(nearby.getRoutes(routeInd));
+                                        route.addStopTimes(stu.getArrival().getTime());
+                                        nearby.removeRoutes(routeInd);
+                                        //Collections.sort(route.getStopTimesList());
+                                        nearby.addRoutes(route);
                                         nearbySouth.removeNearby(nearbyInd);
-                                        nearbySouth.addNearby(nearBuild);
+                                        nearbySouth.addNearby(nearby);
                                     }
                                 }
-                                if(addNewSouth)
+                                if (addNewSouth)
                                     nearbySouth.addNearby(nearby);
-                                if(addNewRoute) {
-                                    NearbyStopsProto.NearbyStops.Builder near = NearbyStopsProto.NearbyStops.newBuilder(nearbySouth.getNearby(nearbyInd)).addRoutes(route);
+                                if (addNewRoute) {
+                                    nearby = NearbyStopsProto.NearbyStops.newBuilder(nearbySouth.getNearby(nearbyInd)).addRoutes(route);
                                     nearbySouth.removeNearby(nearbyInd);
-                                    nearbySouth.addNearby(near);
+                                    nearbySouth.addNearby(nearby);
                                 }
                             }
                             break;
                         }
                     }
                 }
+                if (stopMatched)
+                    break;
             }
         }
         nearbyFeed.addUpdown(nearbyNorth);

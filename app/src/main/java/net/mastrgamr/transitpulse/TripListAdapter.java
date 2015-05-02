@@ -12,11 +12,9 @@ import com.facebook.shimmer.ShimmerFrameLayout;
 
 import net.mastrgamr.transitpulse.gtfs_realtime.NearbyStopsInfo;
 import net.mastrgamr.transitpulse.gtfs_realtime.RTRoutes;
-import net.mastrgamr.transitpulse.gtfs_static.Routes;
 import net.mastrgamr.transitpulse.tools.NearbyStopsProto;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.TreeSet;
 
@@ -37,9 +35,9 @@ public class TripListAdapter extends BaseAdapter {
     //private ArrayList<ArrayList<NearbyStopsInfo>> nearbyStops;
     private ArrayList<NearbyStopsInfo> nearbyStops1;
     private NearbyStopsProto.UpDownStops nearbyStops2;
+    NearbyStopsProto.NearbyStopsFeed nearbyFeed;
     private ArrayList<RTRoutes> nearbyStopRoutes;
     private List<NearbyStopsProto.Routes> nearbyStopRoutes1;
-    LinkedList<NearbyStopsInfo> nsi;
 
     private TreeSet seperators = new TreeSet();
     private static final int TYPE_ITEM = 0;
@@ -62,6 +60,7 @@ public class TripListAdapter extends BaseAdapter {
 
     public TripListAdapter(Context context, NearbyStopsProto.NearbyStopsFeed nearbyStops) {
         c = context;
+        this.nearbyFeed = nearbyStops;
         this.nearbyStops2 = nearbyStops.getUpdown(upDownFlip);
         System.out.println(nearbyStops.getUpdownCount() + " size passed in Adapter");
 
@@ -87,14 +86,15 @@ public class TripListAdapter extends BaseAdapter {
         TextView upDownText;
     }
 
-    public void setStationSelected(boolean state, int selectedStation){
+    public void setStationSelected(boolean state, int selectedStation) {
         stationSelected = state;
-        //nearbyStops1.get(1);
+        this.selectedStation = selectedStation;
         this.notifyDataSetChanged();
     }
 
-    public void setUpDownFlip(){
+    public void setUpDownFlip() {
         upDownFlip = (upDownFlip == 0) ? 1 : 0;
+        this.nearbyStops2 = nearbyFeed.getUpdown(upDownFlip);
         this.notifyDataSetChanged();
     }
 
@@ -110,15 +110,15 @@ public class TripListAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        if(stationSelected)
-            return nearbyStops2.getNearby(upDownFlip).getRoutesList().size();
+        if (stationSelected)
+            return nearbyStops2.getNearby(selectedStation).getRoutesList().size();
         return nearbyStops2.getNearbyList().size();
     }
 
     //Ignore for now
     @Override
     public Object getItem(int position) {
-        return nearbyStops2.getNearby(upDownFlip);
+        return nearbyStops2.getNearby(selectedStation);
     }
 
     @Override
@@ -134,10 +134,9 @@ public class TripListAdapter extends BaseAdapter {
 
         int type = getItemViewType(position);
 
-        if(stationSelected) {
+        if (stationSelected) {
             //Inflate the row items
-            if(convertView == null  || !(convertView.getTag() instanceof TripGridItemHolder))
-            {
+            if (convertView == null || !(convertView.getTag() instanceof TripGridItemHolder)) {
                 inflater = (LayoutInflater) c.getSystemService(Context.LAYOUT_INFLATER_SERVICE); //get inflater
 
                 convertView = inflater.inflate(R.layout.trip_grid_list_item, parent, false); //convertview to tripgrid item
@@ -156,21 +155,20 @@ public class TripListAdapter extends BaseAdapter {
                 convertView.setTag(tgih);
             } else {
                 Log.d(LOG_TAG, "Getting Tag");
-                tgih = (TripGridItemHolder)convertView.getTag();
+                tgih = (TripGridItemHolder) convertView.getTag();
             }
         } else {
-            if(convertView == null || !(convertView.getTag() instanceof TripGridStationHolder))
-            {
+            if (convertView == null || !(convertView.getTag() instanceof TripGridStationHolder)) {
                 inflater = (LayoutInflater) c.getSystemService(Context.LAYOUT_INFLATER_SERVICE); //get inflater
 
                 /*switch (type) {
                     case TYPE_ITEM:*/
-                        convertView = inflater.inflate(R.layout.trip_grid_station_list, parent, false); //convertview to tripgrid item
-                        tgsh = new TripGridStationHolder();
-                        tgsh.stationName = (TextView) convertView.findViewById(R.id.station_name);
-                        tgsh.nextText = (TextView) convertView.findViewById(R.id.next_train_time);
-                        tgsh.routes = (TextView) convertView.findViewById(R.id.station_routes);
-                        tgsh.upDownText = (TextView) convertView.findViewById(R.id.up_down_text);
+                convertView = inflater.inflate(R.layout.trip_grid_station_list, parent, false); //convertview to tripgrid item
+                tgsh = new TripGridStationHolder();
+                tgsh.stationName = (TextView) convertView.findViewById(R.id.station_name);
+                tgsh.nextText = (TextView) convertView.findViewById(R.id.next_train_time);
+                tgsh.routes = (TextView) convertView.findViewById(R.id.station_routes);
+                tgsh.upDownText = (TextView) convertView.findViewById(R.id.up_down_text);
                         /*break;
                     case TYPE_SEPARATOR:
                         convertView = inflater.inflate(R.layout.list_seperator, parent, false);
@@ -184,28 +182,29 @@ public class TripListAdapter extends BaseAdapter {
                 convertView.setTag(tgsh);
             } else {
                 Log.d(LOG_TAG, "Getting Tag");
-                tgsh = (TripGridStationHolder)convertView.getTag();
+                tgsh = (TripGridStationHolder) convertView.getTag();
             }
         }
 
-        if(stationSelected) {
+        if (stationSelected) {
             long time = 0;
             long diff = 0;
             long diffNext = 0;
-            nearbyStopRoutes1 = nearbyStops2.getNearby(position).getRoutesList();
-            for (int i = 0; i < nearbyStopRoutes1.size(); i++) {
-                NearbyStopsProto.Routes rtRoute = nearbyStopRoutes1.get(i);
-                List<Long> stopTimes = rtRoute.getStopTimesList();
-                for (Long stopTime : stopTimes) {
-                    time = stopTime;
-                    diff = (time * 1000) - System.currentTimeMillis();
-                    if (diff >= 0) //if positive break out loop and set up the text
-                        break;
-                }
+
+            nearbyStopRoutes1 = nearbyStops2.getNearby(selectedStation).getRoutesList();
+            //for (int i = 0; i < nearbyStopRoutes1.size(); i++) {
+            NearbyStopsProto.Routes rtRoute = nearbyStopRoutes1.get(position);
+            for (Long stopTime : rtRoute.getStopTimesList()) {
+                System.out.println("Looking up stoptimes");
+                time = stopTime;
+                diff = (time * 1000) - System.currentTimeMillis();
+                if (diff >= 0) //if positive break out loop and set up the text
+                    break;
             }
+            //}
 
             //tgih.routeText.setText(nearbyStops1.get(upDownFlip).trains.get(position).routeId);
-            tgih.routeText.setText(nearbyStops2.getNearby(position).getRoutes(position).getRouteId());
+            tgih.routeText.setText(nearbyStops2.getNearby(selectedStation).getRoutes(position).getRouteId());
 
             Log.d(LOG_TAG, (time * 1000) + " - " + System.currentTimeMillis());
             if (diff < 0) {
@@ -224,13 +223,13 @@ public class TripListAdapter extends BaseAdapter {
             tgsh.stationName.setText(nearbyStops2.getNearby(position).getStopName());
 
             StringBuilder sb = new StringBuilder();
-            for(NearbyStopsProto.Routes routes : nearbyStops2.getNearby(position).getRoutesList()){
-                    sb.append(routes.getRouteId());
-                    sb.append(" ");
+            for (NearbyStopsProto.Routes routes : nearbyStops2.getNearby(position).getRoutesList()) {
+                sb.append(routes.getRouteId());
+                sb.append(" ");
             }
             tgsh.routes.setText(sb);
             tgsh.nextText.setText("");
-            if(upDownFlip == 0) {
+            if (upDownFlip == 0) {
                 tgsh.upDownText.setText("Uptown Trains");
             } else {
                 tgsh.upDownText.setText("Downtown Trains");
@@ -240,7 +239,7 @@ public class TripListAdapter extends BaseAdapter {
         return convertView;
     }
 
-    public boolean isStationSelected(){
+    public boolean isStationSelected() {
         return stationSelected;
     }
 }

@@ -6,7 +6,6 @@ import android.util.Log;
 import net.mastrgamr.transitpulse.gtfs_static.Routes;
 import net.mastrgamr.transitpulse.gtfs_static.Stops;
 
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -24,29 +23,29 @@ import java.util.HashMap;
 /**
  * (BETA)
  * Creates a serialized version of data read in from the static GTFS feed.
- *
+ * <p/>
  * To use, initialize a new {@link net.mastrgamr.transitpulse.tools.DataMaps}, and include the Class in
  * the '<>'. Remember to call the {@link net.mastrgamr.transitpulse.tools.DataMaps#serialize(Class)} class
  * before operating utilizing the instance.
  *
  * @param <T> Static GTFS data: agency, calendar, calendar_dates, routes, shapes, stop_times, stops,
- *           transfers, trips.
+ *            transfers, trips.
  */
-public class DataMaps<T> extends HashMap<String, T>{
+public class DataMaps<T> extends HashMap<String, T> {
 
     private T t;
     private transient Context context;
 
     private String serializedData;
 
-    public DataMaps(Context c){
+    public DataMaps(Context c) {
         this.context = c;
     }
 
-    public boolean doesMapExist(Class<?> cls){
-        if(cls.equals(Routes.class)) {
+    public boolean doesMapExist(Class<?> cls) {
+        if (cls.equals(Routes.class)) {
             serializedData = "routeMap.ser";
-        } else if(cls.equals(Stops.class)) {
+        } else if (cls.equals(Stops.class)) {
             serializedData = "stopMap.ser";
         }
 
@@ -58,14 +57,14 @@ public class DataMaps<T> extends HashMap<String, T>{
     public void serialize(Class<?> cls) {
         //this.t = t;
         try {
-            if(cls.equals(Routes.class)) {
+            if (cls.equals(Routes.class)) {
                 serializedData = "routeMap.ser";
-            } else if(cls.equals(Stops.class)) {
+            } else if (cls.equals(Stops.class)) {
                 serializedData = "stopMap.ser";
             }
 
             File test = context.getFileStreamPath(serializedData);
-            if(!test.exists()){
+            if (!test.exists()) {
                 Log.d("DataMaps", "FILE GETTING CREATED");
 
                 FileOutputStream fos = context.openFileOutput(serializedData, Context.MODE_PRIVATE);
@@ -84,22 +83,21 @@ public class DataMaps<T> extends HashMap<String, T>{
     public DataMaps<T> getMap(Class<?> cls) {
         //De-serialize map stored in memory
         DataMaps<T> map = null;
-        try
-        {
-            if(cls.equals(Routes.class)) {
+        try {
+            if (cls.equals(Routes.class)) {
                 serializedData = "routeMap.ser";
-            } else if(cls.equals(Stops.class)) {
+            } else if (cls.equals(Stops.class)) {
                 serializedData = "stopMap.ser";
             }
 
             FileInputStream fis = context.openFileInput(serializedData);
             ObjectInputStream ois = new ObjectInputStream(fis);
-            map = (DataMaps<T>)ois.readObject();
+            map = (DataMaps<T>) ois.readObject();
             ois.close();
             fis.close();
-        } catch(IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
-        } catch(ClassNotFoundException e) {
+        } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
 
