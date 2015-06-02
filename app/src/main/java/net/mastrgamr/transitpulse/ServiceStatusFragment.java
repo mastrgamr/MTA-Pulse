@@ -2,6 +2,7 @@ package net.mastrgamr.transitpulse;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -11,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -36,8 +38,12 @@ public class ServiceStatusFragment extends Fragment implements SwipeRefreshLayou
     private final String LOG_TAG = getClass().getSimpleName();
     private static final String ARG_SECTION_NUMBER = "section_number";
 
+    private static final String[] menuItems = {"Settings", "About"};
+    public static boolean settingsPressed = false;
+
     private View rootView;
     private ListView listView;
+    private ListView menuList;
     private SwipeRefreshLayout refreshLayout;
 
     private ServiceStatus serviceStatus;
@@ -58,8 +64,7 @@ public class ServiceStatusFragment extends Fragment implements SwipeRefreshLayou
         return fragment;
     }
 
-    public ServiceStatusFragment() {
-    }
+    public ServiceStatusFragment() { }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -72,7 +77,7 @@ public class ServiceStatusFragment extends Fragment implements SwipeRefreshLayou
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        rootView = inflater.inflate(R.layout.fragment_main, container, false);
+        rootView = inflater.inflate(R.layout.service_status_fragment, container, false);
 
         //statusListAdapter = new StatusListAdapter(rootView.getContext());
         refreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.refresh_container);
@@ -96,10 +101,27 @@ public class ServiceStatusFragment extends Fragment implements SwipeRefreshLayou
                 if (statusListAdapter.getStatusText(position) != null) {
                     ((MainActivity) getActivity()).onStatusClicked(statusListAdapter.getStatusText(position));
                 } else {
-                    Toast.makeText(rootView.getContext(), "Service is good.\nTake the train!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(rootView.getContext(), "Service is good!", Toast.LENGTH_SHORT).show();
                 }
             }
         });
+
+        menuList = (ListView)rootView.findViewById(R.id.menu_list);
+        menuList.setAdapter(new ArrayAdapter<>(rootView.getContext(), android.R.layout.simple_list_item_1, menuItems));
+        menuList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if(position == 0){ //Settings
+                    settingsPressed = true;
+                    TripActivity ta = (TripActivity)getActivity();
+                    ta.showSetingsFragment();
+                } else if(position == 1){
+                    Intent i = new Intent(rootView.getContext(), AboutActivity.class);
+                    startActivity(i);
+                }
+            }
+        });
+
         return rootView;
     }
 

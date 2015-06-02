@@ -11,7 +11,7 @@
     <string name="action_settings">Settings</string>
     <string name="action_about">About App&#8230;</string>
     <string name="hello_world">Herro Rorld</string>
-    <string name="title_activity_trip">Trip Activity</string>
+    <string name="title_activity_trip">Transit Map</string>
     <string name="title_activity_license">Open Source Licenses</string>
     <string name="license_button">View License</string>
 
@@ -29,6 +29,11 @@
         As a student, who also works and travels frequently throughout all five boroughs
         of the city, I felt there was something missing in the current offering of transit apps
         that cater to the city; convenience, information, <u>and</u> ease of use.
+    </string>
+
+    <string name="ada_warning">
+        The service change affects one or more ADA accessible stations. Please call 511 for help with planning your trip.\n
+        If you are deaf or hard of hearing use your preferred relay service provider or the free 711 relay.
     </string>
 
     <!-- LICENSING INFO -->
@@ -531,5 +536,9 @@ standalone and requires a support library to be linked with it.  This
 support library is itself covered by the above license.
         </pre>
     </string>
+
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_map">MTA Subway Map</string>
 
 </resources>

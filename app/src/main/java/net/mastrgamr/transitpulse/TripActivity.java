@@ -5,10 +5,14 @@ import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
+
+import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 
 public class TripActivity extends ActionBarActivity {
     TripFragment tf;
+    SlidingMenu menu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,18 +28,29 @@ public class TripActivity extends ActionBarActivity {
                     .commit();
         }
 
-        /*SlidingMenu menu = new SlidingMenu(this);
+        //Sliding menu options
+        menu = new SlidingMenu(this);
         menu.setMode(SlidingMenu.LEFT);
-        menu.setMode(SlidingMenu.SLIDING_WINDOW);
-        menu.setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN);
+        menu.setFadeDegree(0.35f);
+        menu.setTouchModeAbove(SlidingMenu.TOUCHMODE_MARGIN);
         menu.setShadowWidthRes(R.dimen.shadow_width);
         menu.setBehindOffsetRes(R.dimen.slidingmenu_offset);
-        menu.setFadeDegree(0.35f);
         menu.attachToActivity(this, SlidingMenu.SLIDING_CONTENT);
-        menu.setMenu(R.layout.slideoutmenu);*/
-
+        menu.setMenu(R.layout.slideoutmenu);
     }
 
+    public void showSetingsFragment() {
+        //NOT efficient as this assumes backstack will have nothing in it
+        //TODO: make abstract so it works from any view
+        if(getFragmentManager().getBackStackEntryCount() == 0) {
+            getFragmentManager().beginTransaction()
+                    .add(R.id.container, new SettingsFragment())
+                    .hide(tf)
+                    .addToBackStack("TripFragment")
+                    .commit();
+        }
+        menu.showContent();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -75,5 +90,8 @@ public class TripActivity extends ActionBarActivity {
                 tf.setSubwayListColumns(1);
             }
         }
+
+        if(getFragmentManager().getBackStackEntryCount() > 0)
+            getFragmentManager().popBackStack();
     }
 }

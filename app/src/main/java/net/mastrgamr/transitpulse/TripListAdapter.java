@@ -15,6 +15,7 @@ import net.mastrgamr.transitpulse.gtfs_realtime.RTRoutes;
 import net.mastrgamr.transitpulse.tools.NearbyStopsProto;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.TreeSet;
 
@@ -188,22 +189,32 @@ public class TripListAdapter extends BaseAdapter {
 
         if (stationSelected) {
             long time = 0;
+            long time2 = 0;
             long diff = 0;
-            long diffNext = 0;
+            long diff2 = 0;
 
             nearbyStopRoutes1 = nearbyStops2.getNearby(selectedStation).getRoutesList();
-            //for (int i = 0; i < nearbyStopRoutes1.size(); i++) {
             NearbyStopsProto.Routes rtRoute = nearbyStopRoutes1.get(position);
-            for (Long stopTime : rtRoute.getStopTimesList()) {
+            int stopList = rtRoute.getStopTimesList().size();
+            for(int i = 0; i < stopList; i++) {
+                System.out.println("Looking up stoptimes");
+                time = rtRoute.getStopTimes(i);
+                if((i+1) != stopList)
+                    time2 = rtRoute.getStopTimes(i+1);
+                diff = (time * 1000) - System.currentTimeMillis();
+                diff2 = (time2 * 1000) - System.currentTimeMillis();
+                if (diff >= 0) //if positive break out loop and set up the text
+                    break;
+            }
+
+            /*for (Long stopTime : rtRoute.getStopTimesList()) {
                 System.out.println("Looking up stoptimes");
                 time = stopTime;
                 diff = (time * 1000) - System.currentTimeMillis();
                 if (diff >= 0) //if positive break out loop and set up the text
                     break;
-            }
-            //}
+            }*/
 
-            //tgih.routeText.setText(nearbyStops1.get(upDownFlip).trains.get(position).routeId);
             tgih.routeText.setText(nearbyStops2.getNearby(selectedStation).getRoutes(position).getRouteId());
 
             Log.d(LOG_TAG, (time * 1000) + " - " + System.currentTimeMillis());
@@ -218,6 +229,7 @@ public class TripListAdapter extends BaseAdapter {
                 tgih.nextText.setText("");
             } else {
                 tgih.liveTimeText.setText(diff / 60000 + " mins");
+                tgih.nextText.setText(diff2 / 60000 + " next");
             }
         } else {
             tgsh.stationName.setText(nearbyStops2.getNearby(position).getStopName());

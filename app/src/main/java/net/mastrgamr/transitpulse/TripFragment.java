@@ -187,7 +187,7 @@ public class TripFragment extends Fragment implements
         gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(NYC.getCenter(), 10f));
 
         Circle circle;
-        gMap.addPolyline(shapesOptions);
+        gMap.addPolyline(shapesOptions).setColor(getResources().getColor(R.color.s456));
     }
 
     @Override

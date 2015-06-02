@@ -62,6 +62,11 @@ public class MainActivity extends ActionBarActivity implements
                 Intent i = new Intent(this, TripActivity.class);
                 startActivity(i);
                 break;
+            case 2:
+                backPresses = 0;
+//                Intent im = new Intent(this, MapActivity.class);
+//                startActivity(im);
+                break;
             default:
                 Log.e(LOG_TAG, "Something fucked up with these fragments!");
         }
@@ -74,6 +79,9 @@ public class MainActivity extends ActionBarActivity implements
                 break;
             case 2:
                 mTitle = getString(R.string.title_section2);
+                break;
+            case 3:
+                mTitle = "Subway Map";
                 break;
         }
     }

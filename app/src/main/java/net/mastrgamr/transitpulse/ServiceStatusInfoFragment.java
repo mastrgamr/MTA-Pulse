@@ -6,6 +6,9 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 
@@ -64,6 +67,8 @@ public class ServiceStatusInfoFragment extends Fragment {
         //serviceStatusText = getArguments().getString(STATUS_TEXT);
         statusInfo = (TextView) v.findViewById(R.id.statusText);
         statusInfo.setText(serviceStatusText);
+
+        //statusInfo.getLayoutParams().height = v.getHeight() - getActivity().getResources().getDrawable(R.drawable.wheeler).copyBounds().height();
 
         return v;
     }

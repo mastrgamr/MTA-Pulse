@@ -47,8 +47,8 @@ public class NearbyStopsFactory {
 
         for (GtfsRealtime.FeedEntity entity : feedMessage.getEntityList()) {
             //PointD start = new PointD(40.882305, -73.833145); //HOME
-            PointD start = new PointD(40.754191, -73.982881); //RANDOM, between TS and GS
-            //PointD start = new PointD(loc.getLatitude(), loc.getLongitude());
+            //PointD start = new PointD(40.754191, -73.982881); //RANDOM, between TS and GS
+            PointD start = new PointD(loc.getLatitude(), loc.getLongitude());
 
             //Log.d(LOG_TAG, start.toString());
             PointD points;
