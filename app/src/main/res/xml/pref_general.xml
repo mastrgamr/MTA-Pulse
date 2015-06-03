@@ -1,10 +1,13 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <PreferenceCategory
+        android:title="@string/pref_header_general" />
+
     <CheckBoxPreference
         android:key="theme_checkbox"
         android:title="@string/pref_title_app_theme"
         android:summary="@string/pref_description_app_theme"
-        android:defaultValue="true" />
+        android:defaultValue="false" />
 
     <!-- NOTE: Hide buttons to simplify the UI. Users can touch outside the dialog to
          dismiss it. -->

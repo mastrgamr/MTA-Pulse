@@ -3,9 +3,11 @@ package net.mastrgamr.transitpulse;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -52,6 +54,9 @@ public class ServiceStatusFragment extends Fragment implements SwipeRefreshLayou
 
     private PopulateList populateList;
 
+    private SharedPreferences appSettings;
+    private boolean isDarkTheme;
+
     /**
      * Returns a new instance of this fragment for the given section
      * number.
@@ -72,6 +77,9 @@ public class ServiceStatusFragment extends Fragment implements SwipeRefreshLayou
 
         populateList = new PopulateList();
         populateList.execute(MtaFeeds.serviceStatus);
+
+        appSettings = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        isDarkTheme = appSettings.getBoolean("theme_checkbox", false);
     }
 
     @Override
@@ -81,6 +89,10 @@ public class ServiceStatusFragment extends Fragment implements SwipeRefreshLayou
 
         //statusListAdapter = new StatusListAdapter(rootView.getContext());
         refreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.refresh_container);
+        if(isDarkTheme) {
+            refreshLayout.setBackgroundColor(rootView.getResources().getColor(R.color.menu_back_dark));
+            Log.d(LOG_TAG, "We got a dark theme.");
+        }
         refreshLayout.setOnRefreshListener(this);
         if (Build.VERSION.SDK_INT < 21) {
             refreshLayout.setColorSchemeColors(android.R.color.holo_blue_bright,

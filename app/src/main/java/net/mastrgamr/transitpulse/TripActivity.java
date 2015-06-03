@@ -1,6 +1,7 @@
 package net.mastrgamr.transitpulse;
 
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
@@ -17,6 +18,9 @@ public class TripActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        PreferenceManager.setDefaultValues(this, R.xml.pref_general, false);
+
         setContentView(R.layout.activity_trip);
         if (getActionBar() != null)
             getActionBar().setDisplayHomeAsUpEnabled(true);

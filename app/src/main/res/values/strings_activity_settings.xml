@@ -8,6 +8,7 @@
 
     <string name="pref_title_app_theme">Use Dark Theme</string>
     <string name="pref_description_app_theme">Sets the app\'s theme to use darker colors.
+        (Requires App Restart)
     </string>
 
     <string name="pref_title_add_friends_to_messages">Add friends to messages</string>

@@ -16,4 +16,7 @@
 	<color name="s123">#EE352E</color>
 	<color name="s456">#00933C</color>
 	<color name="s7">#B933AD</color>
+
+	<color name="menu_back_light">#F2F2F2</color>
+	<color name="menu_back_dark">#555555</color>
 </resources>

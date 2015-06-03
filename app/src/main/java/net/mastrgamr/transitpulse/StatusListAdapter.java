@@ -87,7 +87,7 @@ public class StatusListAdapter extends BaseAdapter {
         transitType = serviceStatus.getSubways().get(position);
 
         srih.lineText.setText(transitType.getName());
-        srih.lineText.setTextColor(c.getResources().getColor(R.color.light_white));
+        //srih.lineText.setTextColor(c.getResources().getColor(R.color.light_white));
 
         /*if(transitType.getName().equals("123")) {
             convertView.setBackgroundColor(c.getResources().getColor(R.color.s123));
@@ -101,7 +101,7 @@ public class StatusListAdapter extends BaseAdapter {
             srih.dateTimeText.setText("");
         } else {
             srih.dateTimeText.setText("Updated: " + transitType.getDate() + ", at " + transitType.getTime());
-            srih.dateTimeText.setTextColor(c.getResources().getColor(R.color.light_white));
+            //srih.dateTimeText.setTextColor(c.getResources().getColor(R.color.light_white));
         }
 
         if (transitType.getStatus().equalsIgnoreCase("Good Service")) {
