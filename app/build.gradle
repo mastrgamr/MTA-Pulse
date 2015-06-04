@@ -1,0 +1,54 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 21
+    buildToolsVersion "21.1.2"
+    defaultConfig {
+        applicationId 'net.mastrgamr.transitpulse'
+        minSdkVersion 15
+        targetSdkVersion 21
+        versionCode 1
+        versionName "0.01.012" //app version.app public change number. app internal commit/bugfix
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    packagingOptions {
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/NOTICE.txt'
+    }
+    productFlavors {
+    }
+}
+
+//LoganSquare
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.4'
+    }
+}
+apply plugin: 'com.neenbedankt.android-apt'
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile files('libs/commons-csv-1.1.jar')
+    //compile files('libs/onebusaway-gtfs-realtime-api-1.1.1.jar')
+    compile files('libs/simple-xml-2.7.1.jar')
+    compile files('libs/protobuf-java-2.6.1')
+    //LoganSquare
+    apt 'com.bluelinelabs:logansquare-compiler:1.0.6'
+    compile project(':library')
+    //compile 'net.orange-box.storebox:storebox-lib:1.1.0'
+    compile 'com.android.support:appcompat-v7:21.0.3'
+    compile 'com.facebook.shimmer:shimmer:0.1.0@aar'
+    compile 'com.google.android.gms:play-services:7.3.0'
+    compile 'com.android.support:recyclerview-v7:22.1.1'
+    compile 'com.bluelinelabs:logansquare:1.0.6'
+    compile 'com.android.support:support-v4:22.2.0'
+}

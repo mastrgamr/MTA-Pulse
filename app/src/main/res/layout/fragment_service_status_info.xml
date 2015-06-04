@@ -1,0 +1,30 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/status_info_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="net.mastrgamr.transitpulse.ServiceStatusInfoFragment">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/statusView"
+        android:fillViewport="false"
+        android:layout_above="@+id/include"
+        android:layout_alignParentTop="true">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/fragment_loading"
+            android:id="@+id/statusText"
+            android:padding="10dp" />
+    </ScrollView>
+
+    <include layout="@layout/ada_info_frag"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:id="@+id/include" />
+
+</RelativeLayout>

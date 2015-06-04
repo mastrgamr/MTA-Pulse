@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="10dp"
+    android:layout_margin="5dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="Stop Name"
+        android:id="@+id/textView"
+        android:background="#eeeeee"
+        android:layout_below="@+id/dest_text"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:textAlignment="center"
+        android:layout_marginTop="5dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Route"
+        android:id="@+id/route_text"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignStart="@+id/dest_text"
+        android:layout_alignLeft="@+id/dest_text"
+        android:layout_toRightOf="@+id/dest_text"
+        android:layout_toEndOf="@+id/dest_text"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Destination"
+        android:id="@+id/dest_text"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="33dp"
+        android:layout_alignTop="@+id/next_time_text" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="Past Time"
+        android:id="@+id/past_time_text"
+        android:textColor="@color/dim_foreground_material_dark"
+        android:layout_alignTop="@+id/route_text"
+        android:layout_alignLeft="@+id/shimmer_live" />
+    
+    <com.facebook.shimmer.ShimmerFrameLayout
+        android:id="@+id/shimmer_live"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/dest_text"
+        android:layout_toEndOf="@+id/dest_text"
+        android:layout_marginLeft="25dp"
+        android:layout_marginStart="25dp"
+        android:layout_below="@+id/past_time_text">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Live Time"
+            android:id="@+id/live_time_text" />
+    </com.facebook.shimmer.ShimmerFrameLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Static Time"
+        android:id="@+id/static_time_text"
+        android:visibility="invisible"
+        android:layout_alignLeft="@+id/shimmer_live"
+        android:layout_alignStart="@+id/shimmer_live"
+        android:layout_below="@+id/past_time_text" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="Next Time"
+        android:id="@+id/next_time_text"
+        android:layout_below="@+id/shimmer_live"
+        android:layout_alignLeft="@+id/shimmer_live"
+        android:layout_alignStart="@+id/shimmer_live"
+        android:textColor="@color/dim_foreground_material_dark" />
+
+</RelativeLayout>
