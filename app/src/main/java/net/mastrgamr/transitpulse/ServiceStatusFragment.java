@@ -2,7 +2,10 @@ package net.mastrgamr.transitpulse;
 
 import android.app.Activity;
 import android.app.Fragment;
+<<<<<<< HEAD
 import android.content.Context;
+=======
+>>>>>>> 867398e9a6dd3ef7fa2ac567baf99476867b420d
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -28,7 +31,10 @@ import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
 
 import java.io.File;
+<<<<<<< HEAD
 import java.io.FileOutputStream;
+=======
+>>>>>>> 867398e9a6dd3ef7fa2ac567baf99476867b420d
 import java.io.IOException;
 import java.net.URL;
 
@@ -175,10 +181,17 @@ public class ServiceStatusFragment extends Fragment implements SwipeRefreshLayou
              * Check if file exists
              */
             Log.d(LOG_TAG, "checking if file exists");
+<<<<<<< HEAD
             File[] files = getActivity().getFilesDir().listFiles();
             File preCheck = null;
             for (File file : files) {
                 if (file.getName().equals("serviceStat.xml")) {
+=======
+            File[] files = getActivity().getCacheDir().listFiles();
+            File preCheck = null;
+            for (File file : files) {
+                if (file.getName().startsWith("serviceStat")) {
+>>>>>>> 867398e9a6dd3ef7fa2ac567baf99476867b420d
                     preCheck = file;
                     Log.d(LOG_TAG, "file exists");
                     break;
@@ -209,6 +222,7 @@ public class ServiceStatusFragment extends Fragment implements SwipeRefreshLayou
                         statusListAdapter = new StatusListAdapter(rootView.getContext(), serviceStatus);
 
                         HttpRequest request = HttpRequest.get(url);
+<<<<<<< HEAD
                         File file;
                         FileOutputStream fos;
                         if (request.ok()) {
@@ -223,6 +237,16 @@ public class ServiceStatusFragment extends Fragment implements SwipeRefreshLayou
 
                         refreshStatus = false;
                         file = getActivity().getFileStreamPath("serviceStat.xml");
+=======
+                        File file = null;
+                        if (request.ok()) {
+                            file = File.createTempFile("serviceStat", ".xml", getActivity().getCacheDir());
+                            file.setLastModified(System.currentTimeMillis());
+                            request.receive(file);
+                        }
+
+                        refreshStatus = false;
+>>>>>>> 867398e9a6dd3ef7fa2ac567baf99476867b420d
                         return file;
                     } catch (HttpRequest.HttpRequestException exception) {
                         return null;

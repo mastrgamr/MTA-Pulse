@@ -1,6 +1,7 @@
 package net.mastrgamr.transitpulse;
 
 import android.content.Context;
+<<<<<<< HEAD
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -9,6 +10,9 @@ import android.text.Html;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.style.ImageSpan;
+=======
+import android.text.Html;
+>>>>>>> 867398e9a6dd3ef7fa2ac567baf99476867b420d
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,7 +20,10 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+<<<<<<< HEAD
 import net.mastrgamr.transitpulse.interfaces.LineMaps;
+=======
+>>>>>>> 867398e9a6dd3ef7fa2ac567baf99476867b420d
 import net.mastrgamr.transitpulse.live_service.Line;
 import net.mastrgamr.transitpulse.live_service.ServiceStatus;
 
@@ -35,11 +42,14 @@ public class StatusListAdapter extends BaseAdapter {
     private ServiceStatus serviceStatus;
     private Line transitType;
 
+<<<<<<< HEAD
     StatusRowItemHolder srih;
 
     private SpannableStringBuilder ssb;
     private SpanString spanString;
 
+=======
+>>>>>>> 867398e9a6dd3ef7fa2ac567baf99476867b420d
     public StatusListAdapter(Context c, ServiceStatus s) {
         this.c = c;
         Serializer serializer = new Persister();
@@ -77,13 +87,21 @@ public class StatusListAdapter extends BaseAdapter {
     //TODO: Check efficiency, doesn't seem right in teh logcatz. Getting Tags, then inflating views?
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+<<<<<<< HEAD
+=======
+        StatusRowItemHolder srih;
+>>>>>>> 867398e9a6dd3ef7fa2ac567baf99476867b420d
 
         //Inflate the row items
         if (convertView == null) {
             LayoutInflater inflater = (LayoutInflater) c.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = inflater.inflate(R.layout.status_list_item, parent, false);
 
+<<<<<<< HEAD
             //Log.d(LOG_TAG, "Inflating ViewHolder");
+=======
+            Log.d(LOG_TAG, "Inflating ViewHolder");
+>>>>>>> 867398e9a6dd3ef7fa2ac567baf99476867b420d
             srih = new StatusRowItemHolder();
             srih.lineText = (TextView) convertView.findViewById(R.id.lineText);
             srih.statusText = (TextView) convertView.findViewById(R.id.statusText);
@@ -91,7 +109,11 @@ public class StatusListAdapter extends BaseAdapter {
 
             convertView.setTag(srih);
         } else {
+<<<<<<< HEAD
             //Log.d(LOG_TAG, "Getting Tag");
+=======
+            Log.d(LOG_TAG, "Getting Tag");
+>>>>>>> 867398e9a6dd3ef7fa2ac567baf99476867b420d
             srih = (StatusRowItemHolder) convertView.getTag();
         }
 
@@ -99,10 +121,22 @@ public class StatusListAdapter extends BaseAdapter {
         transitType = serviceStatus.getSubways().get(position);
 
         srih.lineText.setText(transitType.getName());
+<<<<<<< HEAD
         //TODO: Make efficient, AsyncTask most likely not going to work
 //        spanString = new SpanString(srih.lineText.getLineHeight());
 //        Log.d(LOG_TAG, "Transit line name: " + transitType.getName());
 //        spanString.execute(transitType.getName());
+=======
+        //srih.lineText.setTextColor(c.getResources().getColor(R.color.light_white));
+
+        /*if(transitType.getName().equals("123")) {
+            convertView.setBackgroundColor(c.getResources().getColor(R.color.s123));
+        } else if(transitType.getName().equals("456")) {
+            convertView.setBackgroundColor(c.getResources().getColor(R.color.s456));
+        } else if(transitType.getName().equals("7")) {
+            convertView.setBackgroundColor(c.getResources().getColor(R.color.s7));
+        }*/
+>>>>>>> 867398e9a6dd3ef7fa2ac567baf99476867b420d
 
         if (transitType.getDate() == null || transitType.getTime() == null) {
             srih.dateTimeText.setText("");
@@ -133,6 +167,7 @@ public class StatusListAdapter extends BaseAdapter {
             return Html.fromHtml(serviceStatus.getSubways().get(position).getText()).toString();
         return null;
     }
+<<<<<<< HEAD
 
     private class SpanString extends AsyncTask<String, Void, SpannableStringBuilder> {
         int lineHeight;
@@ -190,4 +225,6 @@ public class StatusListAdapter extends BaseAdapter {
             srih.lineText.setText(s);
         }
     }
+=======
+>>>>>>> 867398e9a6dd3ef7fa2ac567baf99476867b420d
 }

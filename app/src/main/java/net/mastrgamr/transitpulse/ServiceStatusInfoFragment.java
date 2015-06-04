@@ -2,6 +2,7 @@ package net.mastrgamr.transitpulse;
 
 import android.app.Activity;
 import android.app.Fragment;
+<<<<<<< HEAD
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -21,6 +22,17 @@ import net.mastrgamr.transitpulse.interfaces.LineMaps;
 
 import java.util.HashMap;
 
+=======
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.ScrollView;
+import android.widget.TextView;
+
+>>>>>>> 867398e9a6dd3ef7fa2ac567baf99476867b420d
 
 /**
  * A simple {@link Fragment} subclass.
@@ -31,6 +43,7 @@ import java.util.HashMap;
  * create an instance of this fragment.
  */
 public class ServiceStatusInfoFragment extends Fragment {
+<<<<<<< HEAD
     private static final String STATUS_TEXT = "statusText";
 
     private String serviceStatusText;
@@ -39,6 +52,15 @@ public class ServiceStatusInfoFragment extends Fragment {
     private SpanString spanStatus;
 
     private View adaFrag;
+=======
+    // TODO: Rename parameter arguments, choose names that match
+    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+    private static final String STATUS_TEXT = "statusText";
+
+    // TODO: Rename and change types of parameters
+    private String serviceStatusText;
+    private TextView statusInfo;
+>>>>>>> 867398e9a6dd3ef7fa2ac567baf99476867b420d
 
     private OnStatusClickedListener mListener;
 
@@ -49,6 +71,10 @@ public class ServiceStatusInfoFragment extends Fragment {
      * @param text Text received from ServiceStatus.
      * @return A new instance of fragment ServiceStatusInfoFragment.
      */
+<<<<<<< HEAD
+=======
+    // TODO: Rename and change types and number of parameters
+>>>>>>> 867398e9a6dd3ef7fa2ac567baf99476867b420d
     public static ServiceStatusInfoFragment newInstance(String text) {
         ServiceStatusInfoFragment fragment = new ServiceStatusInfoFragment();
         Bundle args = new Bundle();
@@ -74,10 +100,19 @@ public class ServiceStatusInfoFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_service_status_info, container, false);
+<<<<<<< HEAD
         statusInfo = (TextView) v.findViewById(R.id.statusText);
         spanStatus = new SpanString(statusInfo.getLineHeight());
         spanStatus.execute(serviceStatusText);
         adaFrag = v.findViewById(R.id.include);
+=======
+        //serviceStatusText = getArguments().getString(STATUS_TEXT);
+        statusInfo = (TextView) v.findViewById(R.id.statusText);
+        statusInfo.setText(serviceStatusText);
+
+        //statusInfo.getLayoutParams().height = v.getHeight() - getActivity().getResources().getDrawable(R.drawable.wheeler).copyBounds().height();
+
+>>>>>>> 867398e9a6dd3ef7fa2ac567baf99476867b420d
         return v;
     }
 
@@ -100,6 +135,7 @@ public class ServiceStatusInfoFragment extends Fragment {
 
     public interface OnStatusClickedListener {
         // TODO: Pass string of service change into this.
+<<<<<<< HEAD
         void onStatusClicked(String string);
     }
 
@@ -146,4 +182,9 @@ public class ServiceStatusInfoFragment extends Fragment {
                 adaFrag.setVisibility(View.GONE);
         }
     }
+=======
+        public void onStatusClicked(String string);
+    }
+
+>>>>>>> 867398e9a6dd3ef7fa2ac567baf99476867b420d
 }

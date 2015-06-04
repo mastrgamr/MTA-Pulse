@@ -148,7 +148,11 @@ public class MainActivity extends ActionBarActivity implements
 
     @Override
     public void onStatusClicked(String status) {
+<<<<<<< HEAD
         ServiceStatusInfoFragment fragment = new ServiceStatusInfoFragment();
+=======
+        ServiceStatusInfoFragment fragment = ServiceStatusInfoFragment.newInstance("HERRoOoOO");
+>>>>>>> 867398e9a6dd3ef7fa2ac567baf99476867b420d
 
         Bundle sendArgs = new Bundle();
         sendArgs.putString(STATUS_TEXT, status);

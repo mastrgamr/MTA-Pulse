@@ -9,6 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/statusView"
+<<<<<<< HEAD
         android:fillViewport="false"
         android:layout_above="@+id/include"
         android:layout_alignParentTop="true">
@@ -19,12 +20,25 @@
             android:text="@string/fragment_loading"
             android:id="@+id/statusText"
             android:padding="10dp" />
+=======
+        android:fillViewport="false" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/fragment_loading"
+            android:id="@+id/statusText" />
+>>>>>>> 867398e9a6dd3ef7fa2ac567baf99476867b420d
     </ScrollView>
 
     <include layout="@layout/ada_info_frag"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+<<<<<<< HEAD
         android:layout_alignParentBottom="true"
         android:id="@+id/include" />
+=======
+        android:layout_below="@+id/statusView"/>
+>>>>>>> 867398e9a6dd3ef7fa2ac567baf99476867b420d
 
 </RelativeLayout>

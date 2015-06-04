@@ -12,8 +12,11 @@ import net.mastrgamr.transitpulse.tools.NearbyStopsProto;
 import net.mastrgamr.transitpulse.tools.PointD;
 
 import java.util.Collections;
+<<<<<<< HEAD
 import java.util.List;
 import java.util.Set;
+=======
+>>>>>>> 867398e9a6dd3ef7fa2ac567baf99476867b420d
 
 public class NearbyStopsFactory {
 
@@ -41,16 +44,23 @@ public class NearbyStopsFactory {
 
     public NearbyStopsProto.NearbyStopsFeed publishNearbyFeed(Location loc, DataMaps<Stops> stopsDataMap) {
 
+<<<<<<< HEAD
         Set<String> keyset = stopsDataMap.keySet();
         List<GtfsRealtime.FeedEntity> entityList = feedMessage.getEntityList();
 
+=======
+>>>>>>> 867398e9a6dd3ef7fa2ac567baf99476867b420d
         ArrayListSearcher search = new ArrayListSearcher();
         nearbyFeed = NearbyStopsProto.NearbyStopsFeed.newBuilder();
         nearbyFeed.setHeader(header);
 
         long before = System.currentTimeMillis();
 
+<<<<<<< HEAD
         for (GtfsRealtime.FeedEntity entity : entityList) {
+=======
+        for (GtfsRealtime.FeedEntity entity : feedMessage.getEntityList()) {
+>>>>>>> 867398e9a6dd3ef7fa2ac567baf99476867b420d
             //PointD start = new PointD(40.882305, -73.833145); //HOME
             //PointD start = new PointD(40.754191, -73.982881); //RANDOM, between TS and GS
             PointD start = new PointD(loc.getLatitude(), loc.getLongitude());
@@ -59,7 +69,11 @@ public class NearbyStopsFactory {
             PointD points;
 
             boolean stopMatched = false;
+<<<<<<< HEAD
             for (String stopId : keyset) {
+=======
+            for (String stopId : stopsDataMap.keySet()) {
+>>>>>>> 867398e9a6dd3ef7fa2ac567baf99476867b420d
                 points = new PointD(
                         Double.parseDouble(stopsDataMap.get(stopId).getStopLat()),
                         Double.parseDouble(stopsDataMap.get(stopId).getStopLon()));

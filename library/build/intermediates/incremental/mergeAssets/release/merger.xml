@@ -1,2 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
+<<<<<<< HEAD
 <merger version="3"><dataSet config="main"><source path="C:\Users\mastr_000\Copy\workspace\AndroidProjects\MTAPulse\library\assets"/></dataSet><dataSet config="release"><source path="C:\Users\mastr_000\Copy\workspace\AndroidProjects\MTAPulse\library\src\release\assets"/></dataSet></merger>
+=======
+<merger version="3"><dataSet config="main"><source path="C:\Users\stuart_\Copy\workspace\AndroidProjects\MTAPulse\library\assets"/></dataSet><dataSet config="release"><source path="C:\Users\stuart_\Copy\workspace\AndroidProjects\MTAPulse\library\src\release\assets"/></dataSet></merger>
+>>>>>>> 867398e9a6dd3ef7fa2ac567baf99476867b420d

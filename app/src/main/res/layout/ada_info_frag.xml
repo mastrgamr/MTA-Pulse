@@ -2,8 +2,12 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+<<<<<<< HEAD
     android:id="@+id/wheeler_info"
     android:padding="10dp">
+=======
+    android:id="@+id/wheeler_info">
+>>>>>>> 867398e9a6dd3ef7fa2ac567baf99476867b420d
 
     <ImageView
         android:layout_width="wrap_content"
